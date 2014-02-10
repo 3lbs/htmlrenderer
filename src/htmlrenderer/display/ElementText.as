@@ -34,7 +34,6 @@ package htmlrenderer.display
 	
 	import htmlrenderer.html.Document;
 	import htmlrenderer.html.Node;
-	import htmlrenderer.html.css.CSSUtil;
 	import htmlrenderer.util.ElementUtil;
 	import htmlrenderer.util.FontUtil;
 	import htmlrenderer.util.HTMLUtils;

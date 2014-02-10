@@ -23,7 +23,7 @@ package htmlrenderer
 
 	public class RendererBase extends TSprite
 	{
-
+		
 		public static const RENDERED : String = "rendered";
 
 		public var data : Object;

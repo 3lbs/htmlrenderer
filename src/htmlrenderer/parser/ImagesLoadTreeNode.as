@@ -31,7 +31,7 @@ package htmlrenderer.parser
 	{
 
 		private var _fileURL : File;
-
+		
 		public function ImagesLoadTreeNode( document : Document = null, element : ElementBase = null, node : XML = null )
 		{
 			super( document, element, node );
