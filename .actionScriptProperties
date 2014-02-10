@@ -38,7 +38,6 @@
         </excludedEntries>
       </libraryPathEntry>
       <libraryPathEntry kind="3" linkType="1" path="/TotemFramework/bin/TotemFramework.swc" useDefaultLinkType="false"/>
-      <libraryPathEntry kind="3" linkType="1" path="/TotemExternal/bin/TotemExternal.swc" useDefaultLinkType="false"/>
       <libraryPathEntry kind="1" linkType="1" path="libs"/>
     </libraryPath>
     <sourceAttachmentPath/>

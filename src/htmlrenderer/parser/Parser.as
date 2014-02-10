@@ -221,8 +221,6 @@ package htmlrenderer.parser
 
 				//html = html.replace("</style>","]]></style>");
 
-				// // Log.debug(str)
-
 				return new XML( "<html>" + str + "</html>" );
 			}
 			catch ( error : Error )

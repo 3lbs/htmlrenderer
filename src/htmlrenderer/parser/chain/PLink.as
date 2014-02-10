@@ -18,7 +18,6 @@ package htmlrenderer.parser.chain
 {
 
 	import htmlrenderer.display.ElementText;
-	import htmlrenderer.html.ElementBase;
 	import htmlrenderer.parser.ParseTreeNode;
 
 	public class PLink extends BaseLink

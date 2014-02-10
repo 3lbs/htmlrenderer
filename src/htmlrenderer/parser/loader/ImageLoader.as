@@ -25,8 +25,7 @@ package htmlrenderer.parser.loader
 	import flash.net.URLRequest;
 	import flash.system.ApplicationDomain;
 	import flash.system.LoaderContext;
-	import flash.system.SecurityDomain;
-
+	
 	import htmlrenderer.html.Document;
 
 	public class ImageLoader extends Asset

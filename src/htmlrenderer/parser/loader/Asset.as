@@ -18,7 +18,6 @@ package htmlrenderer.parser.loader
 {
 
 	import flash.events.Event;
-	import flash.events.IOErrorEvent;
 	
 	import totem.events.RemovableEventDispatcher;
 
