@@ -17,7 +17,7 @@
 package htmlrenderer.parser.chain
 {
 
-	import htmlrenderer.html.ElementBase;
+	import htmlrenderer.html.Node;
 	import htmlrenderer.parser.ParseTreeNode;
 
 	public class DivLink extends BaseLink
@@ -34,7 +34,7 @@ package htmlrenderer.parser.chain
 			if ( request == ID )
 			{
 				
-				var element : ElementBase = createElement( treeNode.document, treeNode.element, node, BaseLink.INLINE );
+				var element : Node = createElement( treeNode.document, treeNode.element, node, BaseLink.INLINE );
 
 				if ( element.rawStyle.display == null )
 					element.rawStyle.display = BaseLink.INLINE;

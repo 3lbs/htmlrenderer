@@ -8,7 +8,7 @@
 //    |::.. . |                
 //    `-------'      
 //                       
-//   3lbs Copyright 2013 
+//   3lbs Copyright 2014 
 //   For more information see http://www.3lbs.com 
 //   All rights reserved. 
 //
@@ -21,7 +21,6 @@ package htmlrenderer.parser
 
 	import htmlrenderer.html.Document;
 	import htmlrenderer.html.ElementBase;
-	import htmlrenderer.html.Window;
 	import htmlrenderer.html.css.StylesBase;
 
 	public class CSSLoadTreeNode extends ParseLoadTreeNode
@@ -37,23 +36,17 @@ package htmlrenderer.parser
 		{
 			var styles : String = "";
 
-			var _window : Window = document.window;
 			var text : String;
 
 			reset();
 
 			while ( hasNext())
 			{
-				if ( styles == null )
-				{
-					document = _window.document;
-				}
-
 				text = next().data;
 				styles += text;
 			}
 
-			var _cssStle : StylesBase = _window.css.parseCSS( styles );
+			var _cssStle : StylesBase = document.css.parseCSS( styles );
 
 			super.finished( event );
 		}

@@ -8,7 +8,7 @@
 //    |::.. . |                
 //    `-------'      
 //                       
-//   3lbs Copyright 2013 
+//   3lbs Copyright 2014 
 //   For more information see http://www.3lbs.com 
 //   All rights reserved. 
 //
@@ -20,10 +20,9 @@ package htmlrenderer.util
 	import flash.display.DisplayObject;
 	import flash.filters.DropShadowFilter;
 	
-	import htmlrenderer.html.Document;
-	import htmlrenderer.html.Element;
 	import htmlrenderer.html.ElementBase;
 	import htmlrenderer.html.css.CSSProperties;
+	import htmlrenderer.html.css.CSSUtil;
 	
 	import totem.math.Vector2D;
 
@@ -34,57 +33,37 @@ package htmlrenderer.util
 
 		public static const INLINE : String = "inline";
 
-		public static const TABLE : String = "table";
-
-		public static const TABLE_CELL : String = "table-cell";
-
-		public static const TABLE_ROW : String = "table-row";
-
 		private static const COMPUTED_STYLES : String = "computedStyles";
 
-		public static function createElement( document : Document = null, target : ElementBase = null, xml : XML = null, display : String = null, elementType : Class = null ) : ElementBase
-		{
-
-			var style : Object = document.window.css.getElementStyles( xml, target as Element ).style;
-
-			elementType ||= Element;
-
-			var element : ElementBase = new elementType( document, target, xml, style );
-
-			//var element : Element = Element.create( document, target as Element, xml, style );
-
-			return element;
-		}
-		
 		public static function drawShadow( colorProp : String, displayObject : DisplayObject ) : void
 		{
-			
+
 			var rgbPattern : RegExp = /(?:rgb)a?\(\d{1,3},\s?\d{1,3},\s?\d{1,3}(?:,\s?[0-9\.]+)?\)/;
-			
+
 			var rgbString : String = colorProp.match( rgbPattern )[ 0 ];
-			
+
 			//var rgbColor : uint = HTMLUtils.convertCSS_RGBColor( rgbString );
-			
+
 			var a : Array = colorProp.split( "(" )[ 1 ].split( ") " );
 			/*var c : Array = a[ 0 ].split( "," );
 			var color : uint = HTMLUtils.convertRGB( c[ 0 ], c[ 1 ], c[ 2 ]);*/
-			
-			var rgbArray : Array = rgbString.match( RegExpPatterns.getDelemitedNumbers );
+
+			var rgbArray : Array = rgbString.match( CSSUtil.getDelemitedNumbers );
 			var color : uint = HTMLUtils.convertRGB( rgbArray[ 0 ], rgbArray[ 1 ], rgbArray[ 2 ]);
-			
+
 			var alpha : Number = 1;
-			
+
 			if ( rgbArray[ 3 ])
 			{
 				alpha = parseFloat( rgbArray[ 3 ]);
 			}
-			
+
 			var propArray : Array = a[ 1 ].split( " " );
-			
+
 			var blur : Number = TypeUtils.cleanString( propArray[ 2 ]);
 			var point : Vector2D = new Vector2D( TypeUtils.cleanString( propArray[ 0 ]), TypeUtils.cleanString( propArray[ 1 ]));
 			var angle : Number = point.toRotation() * ( 180 / Math.PI );
-			
+
 			var shadow : DropShadowFilter = new DropShadowFilter();
 			shadow.distance = point.length;
 			shadow.color = color;
@@ -94,7 +73,7 @@ package htmlrenderer.util
 			shadow.alpha = 1;
 			shadow.angle = angle;
 			shadow.alpha = alpha;
-			
+
 			displayObject.filters = [ shadow ];
 		}
 

@@ -8,7 +8,7 @@
 //    |::.. . |                
 //    `-------'      
 //                       
-//   3lbs Copyright 2013 
+//   3lbs Copyright 2014 
 //   For more information see http://www.3lbs.com 
 //   All rights reserved. 
 //
@@ -20,9 +20,14 @@ package htmlrenderer.util
 	import flash.display.BitmapData;
 	import flash.geom.Rectangle;
 	import flash.utils.ByteArray;
+	
+	import htmlrenderer.html.css.CSSUtil;
 
 	public class HTMLUtils
 	{
+
+		private static const COLORS : Object = new Object();
+
 		public static function cleanURL( value : String ) : String
 		{
 			if ( value.indexOf( "url(" ) != -1 )
@@ -41,15 +46,21 @@ package htmlrenderer.util
 			return ba.readObject();
 		}
 
+		/**
+		 * 
+		 * @param value
+		 * @return 
+		 * 
+		 */
 		public static function convertCSS_RGBColor( value : String ) : uint
 		{
-			if ( ColorsByName.isSupported( value ))
+			if ( HTMLUtils.isSupported( value ))
 			{
-				return ColorsByName.convertColor( value );
+				return HTMLUtils.convertColor( value );
 			}
-			else if ( RegExpPatterns.isRGBandA.test( value ))
+			else if ( CSSUtil.isRGBandA.test( value ))
 			{
-				var n : Array = value.match( RegExpPatterns.getDelemitedNumbers );
+				var n : Array = value.match( CSSUtil.getDelemitedNumbers );
 
 				if ( n.length == 3 )
 				{
@@ -61,6 +72,16 @@ package htmlrenderer.util
 				}
 			}
 			return TypeUtils.cleanString( value );
+		}
+
+		/**
+		 *
+		 * @param name
+		 * @param value
+		 */
+		public static function convertColor( colorName : String ) : uint
+		{
+			return COLORS.hasOwnProperty( colorName ) ? COLORS[ colorName ] : 0x000000;
 		}
 
 		public static function convertRGB( r : uint, g : uint, b : uint ) : uint
@@ -123,11 +144,52 @@ package htmlrenderer.util
 			return bitmapData;
 		}
 
+		/**
+		 * <p>Looks up the property type and confirms that it exists.</p>
+		 *
+		 * @param property
+		 */
+		public static function isSupported( colorName : String ) : Boolean
+		{
+			return ( COLORS.hasOwnProperty( colorName ));
+		}
+
+		public static function registerColor( name : String, color : uint ) : void
+		{
+			COLORS[ name ] = color;
+		}
+
+		public static function removeColor( name : String ) : void
+		{
+			delete COLORS[ name ];
+		}
+
 		public static function webColor() : uint
 		{
 			var colorKeywordPattern : RegExp = /^(?:red|tan|grey|gray|lime|navy|blue|teal|aqua|cyan|gold|peru|pink|plum|snow|[a-z]{5,20})$/g;
 
 			return 0;
+		}
+
+		{
+			COLORS[ "black" ] = 0x000000;
+			COLORS[ "blue" ] = 0x0000FF;
+			COLORS[ "green" ] = 0x008000;
+			COLORS[ "gray" ] = 0x808080;
+			COLORS[ "silver" ] = 0xC0C0C0;
+			COLORS[ "lime" ] = 0x00FF00;
+			COLORS[ "olive" ] = 0x808000;
+			COLORS[ "white" ] = 0xFFFFFF;
+			COLORS[ "yellow" ] = 0xFFFF00;
+			COLORS[ "maroon" ] = 0x800000;
+			COLORS[ "navy" ] = 0x000080;
+			COLORS[ "red" ] = 0xFF0000;
+			COLORS[ "purple" ] = 0x800080;
+			COLORS[ "teal" ] = 0x008080;
+			COLORS[ "fuchsia" ] = 0xFF00FF;
+			COLORS[ "aqua" ] = 0x00FFFF;
+			COLORS[ "magenta" ] = 0xFF00FF;
+			COLORS[ "cyan" ] = 0x00FFFF;
 		}
 
 		public function HTMLUtils()

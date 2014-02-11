@@ -8,7 +8,7 @@
 //    |::.. . |                
 //    `-------'      
 //                       
-//   3lbs Copyright 2013 
+//   3lbs Copyright 2014 
 //   For more information see http://www.3lbs.com 
 //   All rights reserved. 
 //
@@ -19,9 +19,9 @@ package htmlrenderer.html
 
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
-	import flash.system.System;
 
 	import htmlrenderer.event.HTMLEvent;
+	import htmlrenderer.html.css.CSS;
 	import htmlrenderer.html.position.AutoPositionLink;
 	import htmlrenderer.html.position.PositionBaseLink;
 	import htmlrenderer.html.position.Static2PositionLink;
@@ -40,11 +40,13 @@ package htmlrenderer.html
 
 		public var assetManager : AssetManager;
 
+		public var css : CSS;
+
+		public var fontURLFiles : Array;
+
 		public var layoutPosition : PositionBaseLink;
 
 		public var parser : Parser;
-
-		public var window : Window;
 
 		private var _baseFont : int = 16;
 
@@ -52,15 +54,31 @@ package htmlrenderer.html
 
 		private var _title : String;
 
-		private var documentElement : ElementBase;
+		private var documentBaseElement : Node;
 
-		public function Document( window : Window, assetManager : AssetManager )
+		public function Document( w : int, h : int, assetManager : AssetManager )
 		{
-			this.window = window;
-			this.assetManager = assetManager;
-			parser = new Parser();
 			super();
-			graphics.clear();
+
+			this.name = "document";
+
+			this.assetManager = assetManager;
+
+			// width and hight
+			graphics.beginFill( 0xDDDDDD, 1 );
+			graphics.drawRect( 0, 0, w, h );
+			graphics.endFill();
+
+			var style : Object = ElementBase._defaultStyleObject;
+			style[ "default" ].width = "100%";
+			style[ "default" ].height = "100%";
+			documentBaseElement = new Node( this, null, null, style );
+			documentBaseElement.name = "_documentBaseElement";
+			addChild( documentBaseElement );
+
+			css = new CSS( w );
+
+			parser = new Parser();
 
 			var autoPosition : AutoPositionLink = new AutoPositionLink();
 			var staticPostion : Static2PositionLink = new Static2PositionLink( autoPosition );
@@ -79,8 +97,6 @@ package htmlrenderer.html
 			parser = null;
 
 			_html = null;
-
-			window = null;
 
 			super.destroy();
 		}
@@ -112,7 +128,7 @@ package htmlrenderer.html
 				}
 			}
 
-			loop( window );
+			loop( this );
 
 			return result;
 		}
@@ -153,7 +169,7 @@ package htmlrenderer.html
 				}
 			}
 
-			loop( documentElement );
+			loop( documentBaseElement );
 
 			return results;
 		}
@@ -188,7 +204,7 @@ package htmlrenderer.html
 				}
 			}
 
-			loop( documentElement );
+			loop( documentBaseElement );
 
 			return results;
 		}
@@ -198,11 +214,25 @@ package htmlrenderer.html
 			return _html;
 		}
 
-		public function parseHTML( document : Document, target : ElementBase, node : XML ) : void
+		public function parseHTML( document : Document, target : Node, node : XML ) : void
 		{
 			_html = node;
 			parser.addEventListener( HTMLEvent.PARSE_COMPLETE_EVENT, handleParseComplete );
-			parser.parseHTML( document, target, node );
+			parser.parseHTML( document, target, _html );
+		}
+
+		public function render( value : String ) : void
+		{
+			documentBaseElement.innerHTML = value;
+		}
+
+		public function resizeTo( width : int, height : int ) : void
+		{
+			graphics.beginFill( 0xDDDDDD, 1 );
+			graphics.drawRect( 0, 0, width, height );
+			graphics.endFill();
+
+			documentBaseElement.updateDisplay();
 		}
 
 		public function get title() : String
@@ -212,24 +242,17 @@ package htmlrenderer.html
 
 		public function set title( value : String ) : void
 		{
-			if ( value !== _title )
+			if ( value != _title )
 			{
 				_title = value;
 			}
-		}
-
-		public function get url() : String
-		{
-			return window.windowURL;
 		}
 
 		protected function handleParseComplete( event : HTMLEvent ) : void
 		{
 			parser.removeEventListener( HTMLEvent.PARSE_COMPLETE_EVENT, handleParseComplete );
 
-			documentElement = event.element;
-
-			documentElement.updateDisplay();
+			documentBaseElement.updateDisplay();
 
 			dispatchEvent( event.clone());
 		}

@@ -18,21 +18,7 @@ package htmlrenderer.util
 {
 
 	import flash.text.Font;
-	import flash.text.engine.BreakOpportunity;
-	import flash.text.engine.CFFHinting;
-	import flash.text.engine.DigitCase;
-	import flash.text.engine.DigitWidth;
-	import flash.text.engine.ElementFormat;
-	import flash.text.engine.FontDescription;
-	import flash.text.engine.FontLookup;
-	import flash.text.engine.FontPosture;
 	import flash.text.engine.FontWeight;
-	import flash.text.engine.Kerning;
-	import flash.text.engine.LigatureLevel;
-	import flash.text.engine.RenderingMode;
-	import flash.text.engine.TextBaseline;
-	import flash.text.engine.TextRotation;
-	import flash.text.engine.TypographicCase;
 
 	public class FontUtil
 	{
@@ -77,29 +63,6 @@ package htmlrenderer.util
 			return FontWeight.NORMAL;
 		}
 
-		/**+
-		 * 	Reads a set of style properties for a named style and then creates
-		 * 	a TextFormat object that uses the same properties.
-		 *	@private
-		 */
-		public static function getFormat( style : Object ) : ElementFormat
-		{
-
-			var fd : FontDescription = new FontDescription( style.fontFamily || "_sans", getFontWeight( style.fontWeight ) || FontWeight.NORMAL, style.fontPosture || style.fontStyle || FontPosture.NORMAL, FontLookup.DEVICE, RenderingMode.NORMAL, CFFHinting.NONE );
-			var format : ElementFormat = new ElementFormat( fd, style.fontSize || 12, style.color || 0, style.alpha || 1, style.textRotation || TextRotation.AUTO, style.textBaseline || TextBaseline.ROMAN, TextBaseline.USE_DOMINANT_BASELINE, 0.0, // baselineShift
-				style.kerning || Kerning.ON, // "on" || "off"
-				0.0, // trackingRight
-				0.0, // trackingLeft
-				"en", // local
-				style.breakOpportunity || BreakOpportunity.AUTO, style.digitCase || DigitCase.DEFAULT, style.digitWidth || DigitWidth.DEFAULT, style.ligatureLevel || LigatureLevel.NONE, style.textTransform || style.fontVariant || style.typographicCase || TypographicCase.DEFAULT );
-
-			if ( style.hasOwnProperty( "letterSpacing" ))
-			{
-				format.trackingRight = style.letterSpacing;
-			}
-			return format;
-		}
-
 		public static function hasFont( value : String ) : Boolean
 		{
 
@@ -109,7 +72,7 @@ package htmlrenderer.util
 			{
 				//trace( font.fontName + ":" + font.fontType );
 
-				if ( font.fontName == value )
+				if ( font.fontName.toLowerCase() == value )
 				{
 					return true;
 				}

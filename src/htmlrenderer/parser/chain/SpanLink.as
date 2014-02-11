@@ -17,7 +17,7 @@
 package htmlrenderer.parser.chain
 {
 
-	import htmlrenderer.html.ElementBase;
+	import htmlrenderer.html.Node;
 	import htmlrenderer.parser.ParseTreeNode;
 
 	public class SpanLink extends BaseLink
@@ -31,7 +31,7 @@ package htmlrenderer.parser.chain
 		{
 			if ( request == "span" )
 			{
-				var element : ElementBase = createElement( treeNode.document, treeNode.element, node, INLINE );
+				var element : Node = createElement( treeNode.document, treeNode.element, node, INLINE );
 				return new ParseTreeNode( treeNode.document, element, node );
 			}
 

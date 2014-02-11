@@ -17,7 +17,7 @@
 package htmlrenderer.parser.chain
 {
 
-	import htmlrenderer.html.ElementBase;
+	import htmlrenderer.html.Node;
 	import htmlrenderer.parser.ParseTreeNode;
 
 	public class BrLink extends BaseLink
@@ -32,7 +32,7 @@ package htmlrenderer.parser.chain
 
 			if ( request == "br" )
 			{
-				var element : ElementBase = createElement( treeNode.document, treeNode.element, node, BLOCK );
+				var element : Node = createElement( treeNode.document, treeNode.element, node, BLOCK );
 				return new ParseTreeNode( treeNode.document, element, node );
 			}
 

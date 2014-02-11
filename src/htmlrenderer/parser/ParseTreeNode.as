@@ -8,7 +8,7 @@
 //    |::.. . |                
 //    `-------'      
 //                       
-//   3lbs Copyright 2013 
+//   3lbs Copyright 2014 
 //   For more information see http://www.3lbs.com 
 //   All rights reserved. 
 //
@@ -20,9 +20,9 @@ package htmlrenderer.parser
 	import flash.display.DisplayObject;
 	import flash.events.Event;
 
-	import htmlrenderer.display.ElementText;
 	import htmlrenderer.html.Document;
-	import htmlrenderer.html.ElementBase;
+	import htmlrenderer.html.ElementText;
+	import htmlrenderer.html.Node;
 
 	import totem.events.RemovableEventDispatcher;
 
@@ -37,7 +37,7 @@ package htmlrenderer.parser
 
 		public var document : Document;
 
-		public var element : ElementBase;
+		public var element : Node;
 
 		public var node : XML;
 
@@ -49,7 +49,7 @@ package htmlrenderer.parser
 
 		private var _requires : Vector.<ParseTreeNode>;
 
-		public function ParseTreeNode( document : Document = null, element : ElementBase = null, node : XML = null )
+		public function ParseTreeNode( document : Document = null, element : Node = null, node : XML = null )
 		{
 			setTo( document, element, node );
 		}
@@ -159,7 +159,7 @@ package htmlrenderer.parser
 			}
 		}
 
-		public function setTo( document : Document = null, element : ElementBase = null, node : XML = null ) : void
+		public function setTo( document : Document = null, element : Node = null, node : XML = null ) : void
 		{
 			this.document = document;
 			this.element = element;

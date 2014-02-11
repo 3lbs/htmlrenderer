@@ -22,7 +22,7 @@ package htmlrenderer.parser
 	import flash.events.Event;
 	import flash.filesystem.File;
 	
-	import htmlrenderer.display.ElementImage;
+	import htmlrenderer.html.ElementImage;
 	import htmlrenderer.html.Document;
 	import htmlrenderer.html.ElementBase;
 	import htmlrenderer.parser.loader.ImageLoader;

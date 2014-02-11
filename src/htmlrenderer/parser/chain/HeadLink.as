@@ -21,8 +21,8 @@ package htmlrenderer.parser.chain
 	import htmlrenderer.parser.ParseTreeNode;
 	import htmlrenderer.parser.loader.Asset;
 	import htmlrenderer.parser.loader.AssetManager;
-	import htmlrenderer.parser.loader.SingleFileLoader;
 	import htmlrenderer.parser.loader.FontLoader;
+	import htmlrenderer.parser.loader.SingleFileLoader;
 	import htmlrenderer.util.FontUtil;
 
 	public class HeadLink extends BaseLink
@@ -84,7 +84,7 @@ package htmlrenderer.parser.chain
 
 				if ( unloadedFonts.length > 0 )
 				{
-					var fontFiles : Array = treeNode.document.window.fontFilesURL;
+					var fontFiles : Array = treeNode.document.fontURLFiles;
 
 					for each ( url in fontFiles )
 					{
@@ -92,6 +92,7 @@ package htmlrenderer.parser.chain
 						{
 							var fontLoader : FontLoader = assetManager.loadAsset( url, FontLoader ) as FontLoader;
 							fontLoader.fontNames = unloadedFonts;
+							//parseToken.addLoader( fontLoader );
 							fontLoader.start();
 						}
 					}

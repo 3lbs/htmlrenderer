@@ -8,7 +8,7 @@
 //    |::.. . |                
 //    `-------'      
 //                       
-//   3lbs Copyright 2013 
+//   3lbs Copyright 2014 
 //   For more information see http://www.3lbs.com 
 //   All rights reserved. 
 //
@@ -18,8 +18,7 @@ package htmlrenderer.parser.chain
 {
 
 	import htmlrenderer.html.Document;
-	import htmlrenderer.html.Element;
-	import htmlrenderer.html.ElementBase;
+	import htmlrenderer.html.Node;
 	import htmlrenderer.parser.ParseTreeNode;
 
 	public class BaseLink
@@ -35,14 +34,14 @@ package htmlrenderer.parser.chain
 
 		public static const TABLE_ROW : String = "table-row";
 
-		public static function createElement( document : Document = null, target : ElementBase = null, xml : XML = null, display : String = null, elementType : Class = null ) : ElementBase
+		public static function createElement( document : Document = null, target : Node = null, xml : XML = null, display : String = null, elementType : Class = null ) : Node
 		{
 
-			var style : Object = document.window.css.getElementStyles( xml, target as Element ).style;
+			var style : Object = document.css.getElementStyles( xml, target ).style;
 
-			elementType ||= Element;
+			elementType ||= Node;
 
-			var element : ElementBase = new elementType( document, target, xml, style );
+			var element : Node = new elementType( document, target, xml, style );
 
 			//var element : Element = Element.create( document, target as Element, xml, style );
 

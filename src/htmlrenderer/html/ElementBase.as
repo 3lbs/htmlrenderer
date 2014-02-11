@@ -8,7 +8,7 @@
 //    |::.. . |                
 //    `-------'      
 //                       
-//   3lbs Copyright 2013 
+//   3lbs Copyright 2014 
 //   For more information see http://www.3lbs.com 
 //   All rights reserved. 
 //
@@ -26,13 +26,13 @@ package htmlrenderer.html
 	import flash.events.IEventDispatcher;
 	import flash.geom.Matrix;
 	import flash.geom.Rectangle;
-	
+
 	import htmlrenderer.parser.loader.AssetManager;
 	import htmlrenderer.parser.loader.ImageLoader;
 	import htmlrenderer.util.ElementUtil;
 	import htmlrenderer.util.HTMLUtils;
 	import htmlrenderer.util.TypeUtils;
-	
+
 	import totem.display.layout.TSprite;
 	import totem.math.MathUtils;
 
@@ -54,6 +54,9 @@ package htmlrenderer.html
 		public static const TOP : String = "top";
 
 		public static const WIDTH : String = "width";
+
+		public static const _defaultStyleObject : Object = { "default": { left: 0, top: 0, width: "100%", height: 0, position: "auto", background: { type: "none", alpha: 1 }, border: { type: "none", shape: "box",
+						left: 0, right: 0, top: 0, bottom: 0 }, margin: { left: 0, right: 0, top: 0, bottom: 0 }, padding: { left: 0, right: 0, top: 0, bottom: 0 }}};
 
 		public var _currentState : String = DEFAULT;
 
@@ -80,9 +83,6 @@ package htmlrenderer.html
 
 		private var _childrenElementList : Vector.<ElementBase>;
 
-		private var _defaultStyleObject : Object = { "default": { left: 0, top: 0, width: "100%", height: 0, position: "auto", background: { type: "none", alpha: 1 }, border: { type: "none", shape: "box",
-						left: 0, right: 0, top: 0, bottom: 0 }, margin: { left: 0, right: 0, top: 0, bottom: 0 }, padding: { left: 0, right: 0, top: 0, bottom: 0 }}};
-
 		private var _elementRect : Rectangle = new Rectangle();
 
 		private var dirty : Boolean;
@@ -93,7 +93,7 @@ package htmlrenderer.html
 
 		private var images : Array = new Array();
 
-		public function ElementBase( styles : Object = null, events : Object = null )
+		public function ElementBase( styles : Object = null )
 		{
 			super();
 
@@ -150,7 +150,7 @@ package htmlrenderer.html
 		{
 			if ( !_childrenElementList || dirty )
 			{
-				_childrenElementList = floatedRight.concat( floatedLeft ).concat( floatedNone );
+				_childrenElementList = floatedRight.concat( floatedLeft ).concat( floatedNone ).concat( floatedRight );
 				_childrenElementList.sort( sortingFunction );
 				dirty = false;
 			}
@@ -200,57 +200,6 @@ package htmlrenderer.html
 				_childrenElementList.pop().destroy();
 
 			super.destroy();
-		}
-
-		public function draw() : void
-		{
-			graphics.clear();
-
-			if ( _computedStyles.hasOwnProperty( "mask" ))
-			{
-				mask = parent.getChildByName( _computedStyles.mask );
-			}
-
-			if ( _computedStyles.hasOwnProperty( "hitArea" ))
-			{
-				hitArea = parent.getChildByName( _computedStyles.hitArea ) as Sprite;
-			}
-			// Draw eveything
-			drawBorder();
-			graphics.endFill();
-
-			if ( _computedStyles.hasOwnProperty( "boxShadow" ))
-			{
-				var boxShadow : String = _computedStyles.boxShadow;
-				ElementUtil.drawShadow( boxShadow, this );
-			}
-
-			if ( _computedStyles.hasOwnProperty( "scrollRect" ))
-			{
-				var scrollArr : Array = _computedStyles.scrollRect.split( "," );
-				scrollRect = new Rectangle( parseFloat( scrollArr[ 0 ]), parseFloat( scrollArr[ 1 ]), parseFloat( scrollArr[ 2 ]), parseFloat( scrollArr[ 3 ]));
-			}
-
-			if ( _computedStyles.hasOwnProperty( "scale9Grid" ))
-			{
-				var scaleArr : Array = _computedStyles.scale9Grid.split( "," );
-				scale9Grid = new Rectangle( parseFloat( scaleArr[ 0 ]), parseFloat( scaleArr[ 1 ]), parseFloat( scaleArr[ 2 ]), parseFloat( scaleArr[ 3 ]));
-			}
-
-			if ( _computedStyles.hasOwnProperty( "overflow" ) && _computedStyles.overflow != "visible" && _computedStyles.overflow != "auto" )
-			{
-				scrollRect = new Rectangle( 0, 0, _computedStyles.width, _computedStyles.height );
-			}
-
-			if ( _computedStyles.visibility == "hidden" )
-			{
-				this.visible = false;
-			}
-
-			if ( _computedStyles.opacity )
-			{
-				this.alpha = parseFloat( _computedStyles.opacity );
-			}
 		}
 
 		public function get elementRect() : Rectangle
@@ -313,8 +262,8 @@ package htmlrenderer.html
 					else
 					{
 						// this is frame level 
-						w = parent.parent.width;
-						h = parent.parent.height;
+						w = parent.width;
+						h = parent.height;
 					}
 
 					if ( prop == "x" || prop == WIDTH )
@@ -331,6 +280,57 @@ package htmlrenderer.html
 				{
 					_computedStyles[ prop ] = 0;
 				}
+			}
+		}
+
+		protected function draw() : void
+		{
+			graphics.clear();
+
+			if ( _computedStyles.hasOwnProperty( "mask" ))
+			{
+				mask = parent.getChildByName( _computedStyles.mask );
+			}
+
+			if ( _computedStyles.hasOwnProperty( "hitArea" ))
+			{
+				hitArea = parent.getChildByName( _computedStyles.hitArea ) as Sprite;
+			}
+			// Draw eveything
+			drawBorder();
+			graphics.endFill();
+
+			if ( _computedStyles.hasOwnProperty( "boxShadow" ))
+			{
+				var boxShadow : String = _computedStyles.boxShadow;
+				ElementUtil.drawShadow( boxShadow, this );
+			}
+
+			if ( _computedStyles.hasOwnProperty( "scrollRect" ))
+			{
+				var scrollArr : Array = _computedStyles.scrollRect.split( "," );
+				scrollRect = new Rectangle( parseFloat( scrollArr[ 0 ]), parseFloat( scrollArr[ 1 ]), parseFloat( scrollArr[ 2 ]), parseFloat( scrollArr[ 3 ]));
+			}
+
+			if ( _computedStyles.hasOwnProperty( "scale9Grid" ))
+			{
+				var scaleArr : Array = _computedStyles.scale9Grid.split( "," );
+				scale9Grid = new Rectangle( parseFloat( scaleArr[ 0 ]), parseFloat( scaleArr[ 1 ]), parseFloat( scaleArr[ 2 ]), parseFloat( scaleArr[ 3 ]));
+			}
+
+			if ( _computedStyles.hasOwnProperty( "overflow" ) && _computedStyles.overflow != "visible" && _computedStyles.overflow != "auto" )
+			{
+				scrollRect = new Rectangle( 0, 0, _computedStyles.width, _computedStyles.height );
+			}
+
+			if ( _computedStyles.visibility == "hidden" )
+			{
+				this.visible = false;
+			}
+
+			if ( _computedStyles.opacity )
+			{
+				this.alpha = parseFloat( _computedStyles.opacity );
 			}
 		}
 
@@ -372,16 +372,16 @@ package htmlrenderer.html
 
 			if ( _computedStyles.background.gradient )
 			{
-				gradient();
+				gradientBackground();
 			}
 			else if ( _computedStyles.background.color )
 			{
-				solid();
+				solidBackground();
 			}
 
 			if ( _computedStyles.background.url )
 			{
-				image();
+				imageBackground();
 			}
 
 		}
@@ -431,7 +431,27 @@ package htmlrenderer.html
 			}
 		}
 
-		private function gradient() : void
+		private function getImageMatrix( background : Object, imageWidth : Number, imageHeight : Number ) : Matrix
+		{
+			var matrix : Matrix = new Matrix();
+
+			var tw : Number = _computedStyles.width - imageWidth;
+			var th : Number = _computedStyles.height - imageHeight;
+			matrix.tx = TypeUtils.cleanNumber( background.x || 0, tw );
+			matrix.ty = TypeUtils.cleanNumber( background.y || 0, th );
+
+			var scale : Number = 1;
+
+			if ( background.hasOwnProperty( "width" ) && !isNaN( background.width ))
+			{
+				scale = background.width / imageWidth;
+			}
+			matrix.scale( scale, scale );
+
+			return matrix;
+		}
+
+		private function gradientBackground() : void
 		{
 			var _gradient : Object = _computedStyles.background.gradient;
 
@@ -441,7 +461,7 @@ package htmlrenderer.html
 			graphics.beginGradientFill( GradientType.LINEAR, _gradient.colors, _gradient.alphas, _gradient.stops, matrix );
 		}
 
-		private function image() : void
+		private function imageBackground() : void
 		{
 			var url : String = _computedStyles.background.url;
 
@@ -480,26 +500,6 @@ package htmlrenderer.html
 
 		}
 
-		private function getImageMatrix( background : Object, imageWidth : Number, imageHeight : Number ) : Matrix
-		{
-			var matrix : Matrix = new Matrix();
-			
-			var tw : Number = _computedStyles.width - imageWidth;
-			var th : Number = _computedStyles.height - imageHeight; 
-			matrix.tx = TypeUtils.cleanNumber( background.x || 0, tw );
-			matrix.ty = TypeUtils.cleanNumber( background.y || 0, th );
-
-			var scale : Number = 1;
-
-			if ( background.hasOwnProperty( "width" ) && !isNaN( background.width ) )
-			{
-				scale = background.width / imageWidth;
-			}
-			matrix.scale( scale, scale );
-
-			return matrix;
-		}
-
 		private function render() : void
 		{
 			if ( _computedStyles.height == 0 || _computedStyles.height == "auto" )
@@ -511,7 +511,7 @@ package htmlrenderer.html
 			addMask();
 		}
 
-		private function solid() : void
+		private function solidBackground() : void
 		{
 			if ( _computedStyles.background.color == null )
 			{
@@ -523,12 +523,7 @@ package htmlrenderer.html
 
 		private function sortingFunction( itemA : ElementBase, itemB : ElementBase ) : Number
 		{
-			if ( itemA.index < itemB.index )
-				return -1; //ITEM A is before ITEM B
-			else if ( itemA.index > itemB.index )
-				return 1; //ITEM A is after ITEM B
-			else
-				return 0; //ITEM A and ITEM B have same date
+			return itemA.index - itemB.index;
 		}
 	}
 }

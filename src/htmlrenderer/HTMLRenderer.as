@@ -8,7 +8,7 @@
 //    |::.. . |                
 //    `-------'      
 //                       
-//   3lbs Copyright 2013 
+//   3lbs Copyright 2014 
 //   For more information see http://www.3lbs.com 
 //   All rights reserved. 
 //
@@ -18,40 +18,59 @@ package htmlrenderer
 {
 
 	import htmlrenderer.event.HTMLEvent;
-	import htmlrenderer.html.Layer;
-	import htmlrenderer.html.Window;
+	import htmlrenderer.html.Document;
+	import htmlrenderer.parser.loader.AssetManager;
 
-	public class HTMLRenderer extends RendererBase
+	import totem.core.Destroyable;
+	import totem.monitors.promise.DeferredEventDispatcher;
+	import totem.monitors.promise.IPromise;
+
+	public class HTMLRenderer extends Destroyable
 	{
 
-		public var window : Window;
+		private var _fontURLFiles : Array = [];
 
-		public function HTMLRenderer( width : int, height : int, url : String = "" )
+		private var assetManager : AssetManager;
+
+		public function HTMLRenderer( assetManager : AssetManager )
 		{
-			super( width, height );
-
-			window = new Window( width, height, url );
-
-			addChild( window );
+			this.assetManager = assetManager;
 		}
 
-		override public function render( source : String ) : void
+		public function addFontURL( url : String ) : void
 		{
-			var layer : Layer = window.frames[ 0 ].getLayer( 0 );
-			layer.addEventListener( HTMLEvent.PARSE_COMPLETE_EVENT, completeParser );
-			layer.innerHTML = source;
+			_fontURLFiles.push( url );
 		}
 
-		override public function update( width : int, height : int ) : void
+		override public function destroy() : void
 		{
-			window.resizeTo( width, height );
+			super.destroy();
+
+			_fontURLFiles.length = 0;
+			_fontURLFiles = null;
+
+			assetManager = null;
 		}
 
-		protected function completeParser( event : HTMLEvent ) : void
+		public function get fontURLFiles() : Array
 		{
-			Layer( event.target ).removeEventListener( HTMLEvent.PARSE_COMPLETE_EVENT, completeParser );
+			return _fontURLFiles;
+		}
 
-			dispatchEvent( event.clone());
+		public function renderDocument( source : String, width : int, height : int ) : IPromise
+		{
+			var document : Document = new Document( width, height, assetManager );
+
+			if ( _fontURLFiles.length > 0 )
+			{
+				document.fontURLFiles = _fontURLFiles;
+			}
+			var defferedEventDispatcher : DeferredEventDispatcher = new DeferredEventDispatcher( document );
+			defferedEventDispatcher.resolveOn( HTMLEvent.PARSE_COMPLETE_EVENT );
+
+			document.render( source );
+
+			return defferedEventDispatcher.promise();
 		}
 	}
 }

@@ -20,7 +20,7 @@ package htmlrenderer.parser.chain
 	import flash.display.Bitmap;
 	import flash.display.MovieClip;
 
-	import htmlrenderer.display.ElementImage;
+	import htmlrenderer.html.ElementImage;
 	import htmlrenderer.parser.ImagesLoadTreeNode;
 	import htmlrenderer.parser.ParseTreeNode;
 	import htmlrenderer.parser.loader.AssetManager;

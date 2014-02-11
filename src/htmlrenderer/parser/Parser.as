@@ -8,7 +8,7 @@
 //    |::.. . |                
 //    `-------'      
 //                       
-//   3lbs Copyright 2013 
+//   3lbs Copyright 2014 
 //   For more information see http://www.3lbs.com 
 //   All rights reserved. 
 //
@@ -21,7 +21,7 @@ package htmlrenderer.parser
 	
 	import htmlrenderer.event.HTMLEvent;
 	import htmlrenderer.html.Document;
-	import htmlrenderer.html.ElementBase;
+	import htmlrenderer.html.Node;
 	import htmlrenderer.parser.chain.BaseLink;
 	import htmlrenderer.parser.chain.BodyLink;
 	import htmlrenderer.parser.chain.BrLink;
@@ -52,11 +52,12 @@ package htmlrenderer.parser
 	 * http://erik.eae.net/simplehtmlparser/simplehtmlparser.js
 	 * http://ejohn.org/files/htmlparser.js
 	 */
+
+	//use namespace htmlrenderer_internal;
+
 	public class Parser extends RemovableEventDispatcher
 	{
 		public static const ELEMENT : String = "element";
-
-		public static const RESTART_PARSER : String = "restartParser";
 
 		public var tagChain : BaseLink
 
@@ -73,7 +74,8 @@ package htmlrenderer.parser
 		private const attr : RegExp = /(\w+)(?:\s*=\s*(?:(?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^>\s]+)))?/g;
 
 		private const block : Array = // Block Elements - HTML 4.01 + new 5 tags
-			[ "address", "applet", "blockquote", "button", "center", "dd", "del", "dir", "div", "dl", "dt", "fieldset", "form", "frameset", "hr", "iframe", "ins", "isindex", "li", "map", "menu", "noframes", "noscript", "object", "ol", "p", "pre", "script", "table", "tbody", "td", "tfoot", "th", "thead", "tr", "ul", "section" ];
+			[ "address", "applet", "blockquote", "button", "center", "dd", "del", "dir", "div", "dl", "dt", "fieldset", "form", "frameset", "hr", "iframe", "ins", "isindex", "li", "map", "menu", "noframes",
+			"noscript", "object", "ol", "p", "pre", "script", "table", "tbody", "td", "tfoot", "th", "thead", "tr", "ul", "section" ];
 
 		// Elements that you can, intentionally, leave open (and which close themselves)
 		private const closeSelf : Array = [ "colgroup", "dd", "dt", "li", "options", "p", "td", "tfoot", "th", "thead", "tr" ];
@@ -87,7 +89,8 @@ package htmlrenderer.parser
 			[ "checked", "compact", "declare", "defer", "disabled", "ismap", "multiple", "nohref", "noresize", "noshade", "nowrap", "readonly", "selected" ];
 
 		private const inline : Array = // Inline Elements - HTML 4.01 + new 5 tags
-			[ "a", "abbr", "acronym", "applet", "b", "basefont", "bdo", "big", "br", "button", "cite", "code", "del", "dfn", "em", "font", "i", "iframe", "img", "input", "ins", "kbd", "label", "map", "object", "q", "s", "samp", "script", "select", "small", "span", "strike", "strong", "sub", "sup", "textarea", "time", "tt", "u", "var", "source", "progress" ];
+			[ "a", "abbr", "acronym", "applet", "b", "basefont", "bdo", "big", "br", "button", "cite", "code", "del", "dfn", "em", "font", "i", "iframe", "img", "input", "ins", "kbd", "label", "map", "object",
+			"q", "s", "samp", "script", "select", "small", "span", "strike", "strong", "sub", "sup", "textarea", "time", "tt", "u", "var", "source", "progress" ];
 
 		private var parseNode : ParseTreeNode;
 
@@ -105,7 +108,7 @@ package htmlrenderer.parser
 
 			var spanLink : SpanLink = new SpanLink();
 			var hLink : HLink = new HLink( spanLink );
-			var pLink : PLink = new PLink ( hLink );
+			var pLink : PLink = new PLink( hLink );
 			var brLink : BrLink = new BrLink( pLink );
 			var imgLink : ImgLink = new ImgLink( brLink );
 			var divLink : DivLink = new DivLink( imgLink );
@@ -230,7 +233,7 @@ package htmlrenderer.parser
 			return null;
 		}
 
-		public function parseHTML( document : Document, target : ElementBase, node : XML ) : void
+		public function parseHTML( document : Document, target : Node, node : XML ) : void
 		{
 			parseNode = new ParseTreeNode( document, target, node );
 			parseNode.addEventListener( Event.COMPLETE, handleParseComplete );
@@ -240,13 +243,13 @@ package htmlrenderer.parser
 		protected function handleParseComplete( event : Event ) : void
 		{
 			//parseNode = null;
-			
+
 			wait( 10, dispatchParseComplete );
 		}
-		
+
 		private function dispatchParseComplete() : void
 		{
-			dispatchEvent( new HTMLEvent( HTMLEvent.PARSE_COMPLETE_EVENT, parseNode.element ) );
+			dispatchEvent( new HTMLEvent( HTMLEvent.PARSE_COMPLETE_EVENT, parseNode.element ));
 		}
 
 		private function parse( html : String = null, handler : Object = null ) : void
@@ -405,7 +408,6 @@ package htmlrenderer.parser
 				}
 			}
 		}
-
 	}
 }
 

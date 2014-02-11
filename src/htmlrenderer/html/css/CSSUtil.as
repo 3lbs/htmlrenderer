@@ -8,7 +8,7 @@
 //    |::.. . |                
 //    `-------'      
 //                       
-//   3lbs Copyright 2013 
+//   3lbs Copyright 2014 
 //   For more information see http://www.3lbs.com 
 //   All rights reserved. 
 //
@@ -17,17 +17,23 @@
 package htmlrenderer.html.css
 {
 
-	import flash.display.DisplayObject;
-	import flash.filters.DropShadowFilter;
-	
 	import htmlrenderer.util.HTMLUtils;
-	import htmlrenderer.util.RegExpPatterns;
 	import htmlrenderer.util.TypeUtils;
-	
-	import totem.math.Vector2D;
 
 	public class CSSUtil
 	{
+
+		public static const getDelemitedNumbers : RegExp = /-?\d+(\.\d+)?/g;
+
+		//number = /^-?[0-9]*\.?[0-9]+$/
+		/**
+		 * Test for the following color patterns
+		 * rgba(153,248,204,0.65098)
+		 * rgb(68, 199, 239)
+		 * argb(3233, 432423, 32.343, 4323)
+		 *
+		 */
+		public static const isRGBandA : RegExp = /^a?(?:rgb|hsl)a?/;
 
 		public static var urlPattern : RegExp = /((?<=\")[^\"]*(?=\"))/;
 
@@ -132,7 +138,7 @@ package htmlrenderer.html.css
 						_border.weight = parseFloat( parts[ 0 ]);
 						_border.type = parts[ 1 ] || "solid";
 
-						var rgbArray : Array = parts[ 2 ].match( RegExpPatterns.getDelemitedNumbers );
+						var rgbArray : Array = parts[ 2 ].match( getDelemitedNumbers );
 						_border.color = HTMLUtils.convertRGB( rgbArray[ 0 ], rgbArray[ 1 ], rgbArray[ 2 ]);
 
 						if ( rgbArray[ 3 ])
@@ -304,7 +310,7 @@ package htmlrenderer.html.css
 			{
 				colorData = colorString.match( colorStopPattern );
 
-				n = colorData[ 0 ].match( RegExpPatterns.getDelemitedNumbers );
+				n = colorData[ 0 ].match( getDelemitedNumbers );
 
 				color = HTMLUtils.convertRGB( n[ 0 ], n[ 1 ], n[ 2 ]);
 

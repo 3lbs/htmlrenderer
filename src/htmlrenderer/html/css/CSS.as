@@ -8,7 +8,7 @@
 //    |::.. . |                
 //    `-------'      
 //                       
-//   3lbs Copyright 2013 
+//   3lbs Copyright 2014 
 //   For more information see http://www.3lbs.com 
 //   All rights reserved. 
 //
@@ -17,8 +17,8 @@
 package htmlrenderer.html.css
 {
 
-	import htmlrenderer.html.Element;
 	import htmlrenderer.html.ElementBase;
+	import htmlrenderer.html.Node;
 
 	public class CSS
 	{
@@ -88,7 +88,7 @@ package htmlrenderer.html.css
 			return clean;
 		}
 
-		public function getElementStyles( node : XML, parent : Element = null, width : int = 0 ) : Object
+		public function getElementStyles( node : XML, parent : Node = null, width : int = 0 ) : Object
 		{
 			var size : int = width || windowSize;
 
@@ -97,7 +97,7 @@ package htmlrenderer.html.css
 			var states : Object;
 			var classArray : Array = [];
 			var matchingStyles : Array = [];
-			var currentParentWithinLoop : Element = parent;
+			var currentParentWithinLoop : Node = parent;
 			var currentParentDepth : int = 0;
 			var candidates : Array = [];
 			var lastClass : String
@@ -506,12 +506,12 @@ package htmlrenderer.html.css
 			return { matching: true, parentElement: parentElement, parentDepth: parentDepth }
 		}
 
-		private function loopThroughParentsForMatch( parentElement : Element, stylePart : String, parentDepth : int ) : Object
+		private function loopThroughParentsForMatch( parentElement : Node, stylePart : String, parentDepth : int ) : Object
 		{
 			if ( parentElement.parent is ElementBase )
 			{
 
-				parentElement = parentElement.parent as Element
+				parentElement = parentElement.parent as Node;
 				parentDepth++
 				var result : Object = nodeHasStyles( parentElement, stylePart, parentElement.nodeXML, foundMatch, loopThroughParentsForMatch, parentDepth );
 				return { matching: result.matching, parentElement: result.parentElement, parentDepth: result.parentDepth }

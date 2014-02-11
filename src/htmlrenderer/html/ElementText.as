@@ -14,7 +14,7 @@
 //
 //------------------------------------------------------------------------------
 
-package htmlrenderer.display
+package htmlrenderer.html
 {
 
 	import flash.display.Sprite;
@@ -32,8 +32,6 @@ package htmlrenderer.display
 	import flashx.textLayout.events.UpdateCompleteEvent;
 	import flashx.textLayout.formats.TextLayoutFormat;
 	
-	import htmlrenderer.html.Document;
-	import htmlrenderer.html.Node;
 	import htmlrenderer.util.ElementUtil;
 	import htmlrenderer.util.FontUtil;
 	import htmlrenderer.util.HTMLUtils;
@@ -74,7 +72,7 @@ package htmlrenderer.display
 		{
 			super( document, element, xml, pStyle );
 
-			_styleSheet = document.window.css.styleSheet;
+			_styleSheet = document.css.styleSheet;
 		}
 
 		// need to make this a system that can accept more than one block of text.
@@ -99,7 +97,7 @@ package htmlrenderer.display
 			super.destroy();
 		}
 
-		override public function draw() : void
+		override protected function draw() : void
 		{
 			removeChildren();
 

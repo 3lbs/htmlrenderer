@@ -8,7 +8,7 @@
 //    |::.. . |                
 //    `-------'      
 //                       
-//   3lbs Copyright 2013 
+//   3lbs Copyright 2014 
 //   For more information see http://www.3lbs.com 
 //   All rights reserved. 
 //
@@ -23,7 +23,6 @@ package htmlrenderer.parser.loader
 	import flash.system.ApplicationDomain;
 	import flash.system.LoaderContext;
 	import flash.text.Font;
-
 
 	public class FontLoader extends SingleFileLoader
 	{
@@ -66,13 +65,19 @@ package htmlrenderer.parser.loader
 
 			var FontLibrary : Class;
 
+			var applicationDomain : ApplicationDomain = loader.content.loaderInfo.applicationDomain;
+
 			for each ( var fontName : String in fontNames )
 			{
-				FontLibrary = loader.content.loaderInfo.applicationDomain.getDefinition( fontName ) as Class;
-				var font : Font = new FontLibrary();
-
-				Font.registerFont( FontLibrary );
-
+				if ( applicationDomain.hasDefinition( fontName ))
+				{
+					FontLibrary = applicationDomain.getDefinition( fontName ) as Class;
+					if ( FontLibrary )
+					{
+						var font : Font = new FontLibrary();
+						Font.registerFont( FontLibrary );
+					}
+				}
 			}
 
 			finished();

@@ -14,13 +14,11 @@
 //
 //------------------------------------------------------------------------------
 
-package htmlrenderer.display
+package htmlrenderer.html
 {
 
 	import flash.display.DisplayObject;
 
-	import htmlrenderer.html.Document;
-	import htmlrenderer.html.Node;
 	import htmlrenderer.util.TypeUtils;
 
 	public class ElementImage extends Node
@@ -32,7 +30,7 @@ package htmlrenderer.display
 			super( document, element, xml, pStyle );
 		}
 
-		override public function draw() : void
+		override protected function draw() : void
 		{
 			super.draw();
 
