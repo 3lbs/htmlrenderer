@@ -24,6 +24,7 @@ package htmlrenderer.parser.chain
 	import htmlrenderer.parser.loader.FontLoader;
 	import htmlrenderer.parser.loader.SingleFileLoader;
 	import htmlrenderer.util.FontUtil;
+	import htmlrenderer.util.HTMLUtils;
 
 	public class HeadLink extends BaseLink
 	{
@@ -52,9 +53,10 @@ package htmlrenderer.parser.chain
 				{
 					if ( xml.localName() == "link" )
 					{
-						url = xml.@href.toString();
+						url =  HTMLUtils.cleanURL( xml.@href.toString() );
 						//var linkLoader : SingleFileLoader = new SingleFileLoader( url );
-
+						url = treeNode.document.baseFile.resolvePath( url ).url;
+						
 						var cssLoader : Asset = assetManager.loadAsset( url, SingleFileLoader );
 
 						parseToken.addLoader( cssLoader );
@@ -92,8 +94,8 @@ package htmlrenderer.parser.chain
 						{
 							var fontLoader : FontLoader = assetManager.loadAsset( url, FontLoader ) as FontLoader;
 							fontLoader.fontNames = unloadedFonts;
-							//parseToken.addLoader( fontLoader );
-							fontLoader.start();
+							parseToken.addLoader( fontLoader );
+							//fontLoader.start();
 						}
 					}
 				}

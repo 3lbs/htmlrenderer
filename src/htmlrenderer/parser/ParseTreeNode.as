@@ -41,7 +41,7 @@ package htmlrenderer.parser
 
 		public var node : XML;
 
-		protected var _resources : Vector.<ParseTreeNode> = new Vector.<ParseTreeNode>();
+		protected var _parseNodes : Vector.<ParseTreeNode> = new Vector.<ParseTreeNode>();
 
 		protected var _status : int = EMPTY;
 
@@ -76,13 +76,15 @@ package htmlrenderer.parser
 
 		override public function destroy() : void
 		{
-			while ( _resources.length > 0 )
-				_resources.pop().destroy();
+			while ( _parseNodes.length > 0 )
+				_parseNodes.pop().destroy();
 
+			_parseNodes = null;
+			
 			if ( _requires )
-				while ( _requires.length > 0 )
-					_requires.pop().destroy();
-
+				_requires.length = 0;
+			
+			_requires = null;
 			document = null;
 			element = null;
 			node = null;
@@ -93,7 +95,7 @@ package htmlrenderer.parser
 		public function getNodeByID( value : String ) : ParseTreeNode
 		{
 
-			for each ( var node : ParseTreeNode in _resources )
+			for each ( var node : ParseTreeNode in _parseNodes )
 			{
 				if ( node.id == value )
 					return node;
@@ -133,9 +135,9 @@ package htmlrenderer.parser
 
 			var proxy : ParseTreeNode;
 
-			for ( i = 0; i < _resources.length; ++i )
+			for ( i = 0; i < _parseNodes.length; ++i )
 			{
-				proxy = _resources[ i ];
+				proxy = _parseNodes[ i ];
 
 				if ( proxy.status != COMPLETE )
 				{
@@ -186,7 +188,7 @@ package htmlrenderer.parser
 					if ( result != null )
 					{
 						result.addEventListener( Event.COMPLETE, finished );
-						_resources.push( result );
+						_parseNodes.push( result );
 					}
 				}
 				else
@@ -196,7 +198,10 @@ package htmlrenderer.parser
 				}
 			}
 
-			finished();
+			if ( !doStartParseNodes())
+			{
+				complete();
+			}
 		}
 
 		public function get status() : Number
@@ -208,9 +213,9 @@ package htmlrenderer.parser
 		{
 			_status = COMPLETE;
 
-			for ( var i : int = 0; i < _resources.length; ++i )
+			for ( var i : int = 0; i < _parseNodes.length; ++i )
 			{
-				var result : ParseTreeNode = _resources[ i ];
+				var result : ParseTreeNode = _parseNodes[ i ];
 
 				if ( result.element && result.element != element && result.element is DisplayObject )
 				{
@@ -228,28 +233,28 @@ package htmlrenderer.parser
 
 		protected function finished( event : Event = null ) : void
 		{
-			if ( !doStartResource())
+			if ( !doStartParseNodes())
 			{
 				complete();
 			}
 		}
 
-		private function doStartResource() : Boolean
+		private function doStartParseNodes() : Boolean
 		{
-			if ( _resources == null || _resources.length == 0 || status == COMPLETE )
+			if ( _parseNodes == null || _parseNodes.length == 0 || status == COMPLETE )
 				return false;
 
-			var proxy : ParseTreeNode;
-			var l : int = _resources.length;
+			var tnode : ParseTreeNode;
+			var l : int = _parseNodes.length;
 			var i : int;
 
 			var building : Boolean = false;
 
-			for ( i = 0; i < _resources.length; ++i )
+			for ( i = 0; i < _parseNodes.length; ++i )
 			{
-				proxy = _resources[ i ];
+				tnode = _parseNodes[ i ];
 
-				if ( proxy.status == COMPLETE )
+				if ( tnode.status == COMPLETE )
 				{
 					continue;
 				}
@@ -257,11 +262,11 @@ package htmlrenderer.parser
 				{
 					building = true;
 
-					if ( proxy.status == EMPTY )
+					if ( tnode.status == EMPTY )
 					{
-						if ( proxy.canStart())
+						if ( tnode.canStart())
 						{
-							proxy.start();
+							tnode.start();
 						}
 					}
 

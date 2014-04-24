@@ -19,7 +19,8 @@ package htmlrenderer.html
 
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
-
+	import flash.filesystem.File;
+	
 	import htmlrenderer.event.HTMLEvent;
 	import htmlrenderer.html.css.CSS;
 	import htmlrenderer.html.position.AutoPositionLink;
@@ -27,8 +28,10 @@ package htmlrenderer.html
 	import htmlrenderer.html.position.Static2PositionLink;
 	import htmlrenderer.parser.Parser;
 	import htmlrenderer.parser.loader.AssetManager;
-
+	import htmlrenderer.util.HTMLUtils;
+	
 	import totem.display.layout.TSprite;
+	import totem.monitors.promise.wait;
 
 	/**
 	 *
@@ -39,6 +42,12 @@ package htmlrenderer.html
 	{
 
 		public var assetManager : AssetManager;
+
+		public var baseFile : File;
+
+		public var contentHeight : int;
+
+		public var contentWidth : int;
 
 		public var css : CSS;
 
@@ -69,12 +78,17 @@ package htmlrenderer.html
 			graphics.drawRect( 0, 0, w, h );
 			graphics.endFill();
 
-			var style : Object = ElementBase._defaultStyleObject;
+			contentWidth = w;
+			contentHeight = h;
+
+			var style : Object = HTMLUtils.cloneObject( ElementBase._defaultStyleObject );
 			style[ "default" ].width = "100%";
 			style[ "default" ].height = "100%";
 			documentBaseElement = new Node( this, null, null, style );
 			documentBaseElement.name = "_documentBaseElement";
 			addChild( documentBaseElement );
+
+			documentBaseElement.addEventListener( HTMLEvent.DRAW_COMPLETE_EVENT, handleDrawCompleteEvent );
 
 			css = new CSS( w );
 
@@ -84,6 +98,11 @@ package htmlrenderer.html
 			var staticPostion : Static2PositionLink = new Static2PositionLink( autoPosition );
 			layoutPosition = staticPostion;
 
+		}
+
+		public function set baseFont(value:int):void
+		{
+			_baseFont = value;
 		}
 
 		public function get baseFont() : int
@@ -97,6 +116,9 @@ package htmlrenderer.html
 			parser = null;
 
 			_html = null;
+
+			documentBaseElement.destroy();
+			documentBaseElement = null;
 
 			super.destroy();
 		}
@@ -248,12 +270,22 @@ package htmlrenderer.html
 			}
 		}
 
+		protected function handleDrawCompleteEvent( event : HTMLEvent ) : void
+		{
+			wait( 10, handleDelay, event );
+		}
+
 		protected function handleParseComplete( event : HTMLEvent ) : void
 		{
 			parser.removeEventListener( HTMLEvent.PARSE_COMPLETE_EVENT, handleParseComplete );
 
 			documentBaseElement.updateDisplay();
 
+			wait( 10, handleDelay, event );
+		}
+
+		private function handleDelay( event : HTMLEvent ) : void
+		{
 			dispatchEvent( event.clone());
 		}
 	}

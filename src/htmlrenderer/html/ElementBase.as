@@ -27,6 +27,8 @@ package htmlrenderer.html
 	import flash.geom.Matrix;
 	import flash.geom.Rectangle;
 
+	import htmlrenderer.event.HTMLEvent;
+	import htmlrenderer.parser.loader.Asset;
 	import htmlrenderer.parser.loader.AssetManager;
 	import htmlrenderer.parser.loader.ImageLoader;
 	import htmlrenderer.util.ElementUtil;
@@ -85,6 +87,10 @@ package htmlrenderer.html
 
 		private var _elementRect : Rectangle = new Rectangle();
 
+		private var _loaders : Vector.<Asset> = new Vector.<Asset>();
+
+		private var currentUpdateIndex : int;
+
 		private var dirty : Boolean;
 
 		private var displayDirty : Boolean;
@@ -92,6 +98,8 @@ package htmlrenderer.html
 		private var imageMask : Sprite;
 
 		private var images : Array = new Array();
+
+		private var totalUpdateIndex : int;
 
 		public function ElementBase( styles : Object = null )
 		{
@@ -228,18 +236,30 @@ package htmlrenderer.html
 			draw();
 
 			// sort and position children
+
+			currentUpdateIndex = 0;
+			totalUpdateIndex = childrenElements.length;
+
 			for each ( var childElement : ElementBase in childrenElements )
 			{
 				if ( childElement is ElementBase )
 				{
+					childElement.addEventListener( HTMLEvent.DRAW_COMPLETE_EVENT, handleElementUpdateComplete );
 					childElement.updateDisplay();
 				}
 			}
 
-			document.layoutPosition.handleRequest( this );
-			// draw again?
+			// no children draw me now!!!
+			if ( totalUpdateIndex == 0 )
+			{
+				document.layoutPosition.handleRequest( this );
+				render();
 
-			render();
+				if ( _loaders.length == 0 )
+				{
+					dispatchEvent( new HTMLEvent( HTMLEvent.DRAW_COMPLETE_EVENT, this ));
+				}
+			}
 		}
 
 		protected function cleanStyle( state : String = "default" ) : void
@@ -262,8 +282,8 @@ package htmlrenderer.html
 					else
 					{
 						// this is frame level 
-						w = parent.width;
-						h = parent.height;
+						w = Document( parent ).contentWidth;
+						h = Document( parent ).contentHeight;
 					}
 
 					if ( prop == "x" || prop == WIDTH )
@@ -338,12 +358,40 @@ package htmlrenderer.html
 		{
 			IEventDispatcher( event.target ).removeEventListener( Event.COMPLETE, handleBackgroundLoaded );
 
-			graphics.clear();
-			drawBorder();
-			graphics.endFill();
+			var idx : int = _loaders.indexOf( event.target as Asset );
+			_loaders.splice( idx, 1 );
 
-			addMask();
+			if ( _loaders.length == 0 )
+			{
+				graphics.clear();
+				drawBorder();
+				graphics.endFill();
 
+				render();
+
+				dispatchEvent( new HTMLEvent( HTMLEvent.DRAW_COMPLETE_EVENT, this ));
+			}
+		}
+
+		protected function handleElementUpdateComplete( event : Event ) : void
+		{
+
+			IEventDispatcher( event.target ).removeEventListener( HTMLEvent.DRAW_COMPLETE_EVENT, handleElementUpdateComplete );
+
+			currentUpdateIndex++;
+
+			if ( currentUpdateIndex >= totalUpdateIndex )
+			{
+
+				draw();
+				document.layoutPosition.handleRequest( this );
+				render();
+
+				if ( _loaders.length == 0 )
+				{
+					dispatchEvent( new HTMLEvent( HTMLEvent.DRAW_COMPLETE_EVENT, this ));
+				}
+			}
 		}
 
 		private function addMask() : void
@@ -381,6 +429,8 @@ package htmlrenderer.html
 
 			if ( _computedStyles.background.url )
 			{
+
+				trace( _computedStyles.background.url );
 				imageBackground();
 			}
 
@@ -463,7 +513,9 @@ package htmlrenderer.html
 
 		private function imageBackground() : void
 		{
-			var url : String = _computedStyles.background.url;
+			var url : String = HTMLUtils.cleanURL( _computedStyles.background.url );
+
+			url = document.baseFile.resolvePath( url ).url;
 
 			if ( _computedStyles.height == "auto" || _computedStyles.height == 0 )
 				return;
@@ -494,8 +546,10 @@ package htmlrenderer.html
 			else
 			{
 				bitmapLoader = assetLoader.loadAsset( url, ImageLoader ) as ImageLoader;
+				_loaders.push( bitmapLoader );
 				bitmapLoader.addEventListener( Event.COMPLETE, handleBackgroundLoaded );
 				bitmapLoader.start();
+
 			}
 
 		}
@@ -505,6 +559,8 @@ package htmlrenderer.html
 			if ( _computedStyles.height == 0 || _computedStyles.height == "auto" )
 			{
 				_computedStyles.height = Math.max( this.height, parentElement.computedStyles.height );
+				_computedStyles.height += ( computedStyles.padding.top + computedStyles.padding.bottom );
+
 				draw();
 			}
 
@@ -525,5 +581,6 @@ package htmlrenderer.html
 		{
 			return itemA.index - itemB.index;
 		}
+		;
 	}
 }

@@ -8,7 +8,7 @@
 //    |::.. . |                
 //    `-------'      
 //                       
-//   3lbs Copyright 2013 
+//   3lbs Copyright 2014 
 //   For more information see http://www.3lbs.com 
 //   All rights reserved. 
 //
@@ -19,10 +19,13 @@ package htmlrenderer.parser
 
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
-	
+	import flash.events.IOErrorEvent;
+
 	import htmlrenderer.html.Document;
 	import htmlrenderer.html.ElementBase;
 	import htmlrenderer.parser.loader.Asset;
+
+	import totem.monitors.promise.wait;
 
 	public class ParseLoadTreeNode extends ParseTreeNode
 	{
@@ -33,7 +36,7 @@ package htmlrenderer.parser
 
 		private var _index : int;
 
-		private var _list : Vector.<Asset> = new Vector.<Asset>();
+		private var _loaders : Vector.<Asset> = new Vector.<Asset>();
 
 		public function ParseLoadTreeNode( document : Document = null, element : ElementBase = null, node : XML = null )
 		{
@@ -46,19 +49,21 @@ package htmlrenderer.parser
 
 		public function addLoader( loader : Asset, eventType : String = Event.COMPLETE ) : void
 		{
-			_list.push( loader );
+			_loaders.push( loader );
 			totalCount += 1;
 			loader.addEventListener( eventType, onComplete );
+			loader.addEventListener( IOErrorEvent.IO_ERROR, handleOnFailed );
 		}
 
 		override public function destroy() : void
 		{
 
-			while ( _list.length > 0 )
-				_list.pop().destroy();
+			//while ( _loaders.length > 0 )
+			//_loaders.pop(); //.destroy();
 
-			_list = null;
-			
+			_loaders.length = 0;
+			_loaders = null;
+
 			super.destroy();
 		}
 
@@ -78,60 +83,90 @@ package htmlrenderer.parser
 
 		public function hasNext() : Boolean
 		{
-			return ( _index < _list.length - 1 );
+			return ( _index < _loaders.length - 1 );
 		}
 
-		public function next() : Asset
-		{
-			if ( !( _index < _list.length - 1 ))
-			{
-				return null;
-			}
-			return _list[ ++_index ];
-		}
-
-		public function reset() : void
-		{
-			_index = -1;
-		}
 		override public function isComplete() : Boolean
 		{
-			
+
 			if ( status == COMPLETE )
 				return true;
 
 			return false;
 		}
 
+		public function next() : Asset
+		{
+			if ( !( _index < _loaders.length - 1 ))
+			{
+				return null;
+			}
+			return _loaders[ ++_index ];
+		}
+
+		public function reset() : void
+		{
+			_index = -1;
+		}
+
 		override public function start() : void
 		{
 			_status = LOADING;
-			
-			reset();
 
-			while ( hasNext())
+			var l : int = _loaders.length;
+			var asset : Asset;
+
+			for ( var i : int = 0; i < l; ++i )
 			{
-				next().start();
+				asset = _loaders[ i ];
+
+				if ( asset.isComplete())
+				{
+					wait( 3, onComplete );
+				}
+				else
+				{
+					asset.start();
+				}
 			}
+		/*reset();
+
+		// this starts all loaders
+		while ( hasNext())
+		{
+			next().start();
+		}*/
 		}
 
 		public function get totalDispatchers() : int
 		{
-			return _list.length;
+			return _loaders.length;
 		}
 
-		protected function onComplete( eve : Event ) : void
+		override protected function complete() : void
 		{
-			var loader : IEventDispatcher = eve.target as IEventDispatcher;
-			loader.removeEventListener( eve.type, onComplete );
+			super.complete();
 
-			dispatchEvent( new Event( Event.CHANGE ));
+		}
+
+		protected function handleOnFailed( event : Event ) : void
+		{
+			complete();
+		}
+
+		protected function onComplete( eve : Event = null ) : void
+		{
+			if ( eve )
+			{
+				var loader : IEventDispatcher = eve.target as IEventDispatcher;
+				loader.removeEventListener( eve.type, onComplete );
+				loader.removeEventListener( IOErrorEvent.IO_ERROR, handleOnFailed );
+			}
 
 			_complete += 1;
 
-			if ( _list.length > 0 && _complete >= totalCount )
+			if ( _loaders.length > 0 && _complete >= totalCount && status != EMPTY )
 			{
-
 				finished();
 			}
 		}

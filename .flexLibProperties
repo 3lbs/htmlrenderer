@@ -1,7 +1,56 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <flexLibProperties includeAllClasses="true" useMultiPlatformConfig="false" version="3">
   <includeClasses>
+    <classEntry path="htmlrenderer.HTMLRenderer"/>
+    <classEntry path="htmlrenderer.event.HTMLEvent"/>
+    <classEntry path="htmlrenderer.html.Document"/>
+    <classEntry path="htmlrenderer.html.ElementBase"/>
+    <classEntry path="htmlrenderer.html.ElementImage"/>
+    <classEntry path="htmlrenderer.html.ElementText"/>
+    <classEntry path="htmlrenderer.html.Node"/>
+    <classEntry path="htmlrenderer.html.css.CSS"/>
+    <classEntry path="htmlrenderer.html.css.CSSProperties"/>
+    <classEntry path="htmlrenderer.html.css.CSSUtil"/>
+    <classEntry path="htmlrenderer.html.css.MediaBlockStyle"/>
+    <classEntry path="htmlrenderer.html.css.MediaStyles"/>
+    <classEntry path="htmlrenderer.html.css.StylesBase"/>
+    <classEntry path="htmlrenderer.html.position.AbsolutePositionLink"/>
+    <classEntry path="htmlrenderer.html.position.AutoPositionLink"/>
+    <classEntry path="htmlrenderer.html.position.FixedPositionLink"/>
+    <classEntry path="htmlrenderer.html.position.PositionBaseLink"/>
+    <classEntry path="htmlrenderer.html.position.PositionController"/>
+    <classEntry path="htmlrenderer.html.position.RelativeBaseLink"/>
+    <classEntry path="htmlrenderer.html.position.Static2PositionLink"/>
+    <classEntry path="htmlrenderer.html.position.StaticPositionLink"/>
     <classEntry path="htmlrenderer.htmlrenderer_internal"/>
+    <classEntry path="htmlrenderer.parser.CSSLoadTreeNode"/>
+    <classEntry path="htmlrenderer.parser.ImagesLoadTreeNode"/>
+    <classEntry path="htmlrenderer.parser.ParseLoadTreeNode"/>
+    <classEntry path="htmlrenderer.parser.ParseTreeNode"/>
+    <classEntry path="htmlrenderer.parser.Parser"/>
+    <classEntry path="htmlrenderer.parser.SWFLoadTreeNode"/>
+    <classEntry path="htmlrenderer.parser.chain.BaseLink"/>
+    <classEntry path="htmlrenderer.parser.chain.BodyLink"/>
+    <classEntry path="htmlrenderer.parser.chain.BrLink"/>
+    <classEntry path="htmlrenderer.parser.chain.CDATALink"/>
+    <classEntry path="htmlrenderer.parser.chain.DivLink"/>
+    <classEntry path="htmlrenderer.parser.chain.HLink"/>
+    <classEntry path="htmlrenderer.parser.chain.HeadLink"/>
+    <classEntry path="htmlrenderer.parser.chain.HtmlLink"/>
+    <classEntry path="htmlrenderer.parser.chain.ImgLink"/>
+    <classEntry path="htmlrenderer.parser.chain.ObjectLink"/>
+    <classEntry path="htmlrenderer.parser.chain.PLink"/>
+    <classEntry path="htmlrenderer.parser.chain.SpanLink"/>
+    <classEntry path="htmlrenderer.parser.loader.Asset"/>
+    <classEntry path="htmlrenderer.parser.loader.AssetManager"/>
+    <classEntry path="htmlrenderer.parser.loader.FontLoader"/>
+    <classEntry path="htmlrenderer.parser.loader.ImageLoader"/>
+    <classEntry path="htmlrenderer.parser.loader.SWFFileLoader"/>
+    <classEntry path="htmlrenderer.parser.loader.SingleFileLoader"/>
+    <classEntry path="htmlrenderer.util.ElementUtil"/>
+    <classEntry path="htmlrenderer.util.FontUtil"/>
+    <classEntry path="htmlrenderer.util.HTMLUtils"/>
+    <classEntry path="htmlrenderer.util.TypeUtils"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

@@ -30,12 +30,12 @@ package htmlrenderer.parser
 	import htmlrenderer.parser.chain.HeadLink;
 	import htmlrenderer.parser.chain.HtmlLink;
 	import htmlrenderer.parser.chain.ImgLink;
+	import htmlrenderer.parser.chain.ObjectLink;
 	import htmlrenderer.parser.chain.PLink;
 	import htmlrenderer.parser.chain.SpanLink;
 	
 	import totem.display.layout.TSprite;
 	import totem.events.RemovableEventDispatcher;
-	import totem.monitors.promise.wait;
 
 	/**
 	 * This class is a combination of two things, a html cleaner that
@@ -52,24 +52,12 @@ package htmlrenderer.parser
 	 * http://erik.eae.net/simplehtmlparser/simplehtmlparser.js
 	 * http://ejohn.org/files/htmlparser.js
 	 */
-
 	//use namespace htmlrenderer_internal;
-
 	public class Parser extends RemovableEventDispatcher
 	{
 		public static const ELEMENT : String = "element";
 
 		public var tagChain : BaseLink
-
-		private var _nodeName : String;
-
-		private var _paused : Boolean = false;
-
-		private var _pausedData : Object;
-
-		private var _result : Object;
-
-		private var _target : TSprite;
 
 		private const attr : RegExp = /(\w+)(?:\s*=\s*(?:(?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^>\s]+)))?/g;
 
@@ -111,13 +99,26 @@ package htmlrenderer.parser
 			var pLink : PLink = new PLink( hLink );
 			var brLink : BrLink = new BrLink( pLink );
 			var imgLink : ImgLink = new ImgLink( brLink );
-			var divLink : DivLink = new DivLink( imgLink );
+			var objectLink : ObjectLink = new ObjectLink( imgLink );
+			var divLink : DivLink = new DivLink( objectLink );
 			var headLink : HeadLink = new HeadLink( divLink );
 			var bodyLink : BodyLink = new BodyLink( headLink );
 			var htmlLink : HtmlLink = new HtmlLink( bodyLink );
 			tagChain = htmlLink;
 		}
 
+		
+		override public function destroy():void
+		{
+			parseNode.destroy();
+			parseNode = null;
+			
+			tagChain.destroy();
+			tagChain = null;
+			
+			super.destroy();
+		}
+		
 		/*
 		this method still has problems with some things,
 		known quarks:
@@ -236,18 +237,11 @@ package htmlrenderer.parser
 		public function parseHTML( document : Document, target : Node, node : XML ) : void
 		{
 			parseNode = new ParseTreeNode( document, target, node );
-			parseNode.addEventListener( Event.COMPLETE, handleParseComplete );
+			parseNode.addEventListener( Event.COMPLETE, dispatchParseComplete );
 			parseNode.start();
 		}
 
-		protected function handleParseComplete( event : Event ) : void
-		{
-			//parseNode = null;
-
-			wait( 10, dispatchParseComplete );
-		}
-
-		private function dispatchParseComplete() : void
+		private function dispatchParseComplete( event : Event ) : void
 		{
 			dispatchEvent( new HTMLEvent( HTMLEvent.PARSE_COMPLETE_EVENT, parseNode.element ));
 		}

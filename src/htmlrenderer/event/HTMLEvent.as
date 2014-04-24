@@ -8,7 +8,7 @@
 //    |::.. . |                
 //    `-------'      
 //                       
-//   3lbs Copyright 2013 
+//   3lbs Copyright 2014 
 //   For more information see http://www.3lbs.com 
 //   All rights reserved. 
 //
@@ -24,7 +24,9 @@ package htmlrenderer.event
 	public class HTMLEvent extends Event
 	{
 
-		public static const PARSE_COMPLETE_EVENT : String = "parseCompleteEvent";
+		public static const DRAW_COMPLETE_EVENT : String = "HTMLEvent:drawCompleteEvent";
+
+		public static const PARSE_COMPLETE_EVENT : String = "HTMLEvent:parseCompleteEvent";
 
 		public var element : ElementBase;
 

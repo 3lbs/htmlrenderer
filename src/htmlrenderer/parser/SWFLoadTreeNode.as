@@ -17,43 +17,38 @@
 package htmlrenderer.parser
 {
 
+	import flash.display.MovieClip;
 	import flash.events.Event;
-	
+
 	import htmlrenderer.html.Document;
 	import htmlrenderer.html.ElementBase;
-	import htmlrenderer.html.css.StylesBase;
+	import htmlrenderer.html.ElementImage;
+	import htmlrenderer.parser.loader.SWFFileLoader;
 
-	public class CSSLoadTreeNode extends ParseLoadTreeNode
+	public class SWFLoadTreeNode extends ParseLoadTreeNode
 	{
-		public var attribute : Array = [ "backgroundImage", "src", "data" ];
-
-		public function CSSLoadTreeNode( document : Document = null, element : ElementBase = null, node : XML = null )
+		public function SWFLoadTreeNode( document : Document = null, element : ElementBase = null, node : XML = null )
 		{
 			super( document, element, node );
 		}
 
 		override protected function finished( event : Event = null ) : void
 		{
-			var styles : String = "";
-
-			var text : String;
-
 			reset();
 
 			while ( hasNext())
 			{
-				text = next().data;
-				
-				if ( text == null )
-					throw new Error("something wrong");
-				
-				styles += text;
+				var loader : SWFFileLoader = next() as SWFFileLoader;
+
+				var image : * = loader.loader.content;
+				var url : String = loader.id;
+
+				element.rawStyle.width = node.@width.toString() || image.width;
+				element.rawStyle.height = node.@height.toString() || image.height;
+
+				ElementImage( element ).image = image;
+				MovieClip( image ).play();
 			}
-
-			
-	
-			var _cssStle : StylesBase = document.css.parseCSS( styles );
-
 
 			super.finished( event );
 		}

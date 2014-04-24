@@ -66,7 +66,7 @@ package htmlrenderer.util
 		public static function hasFont( value : String ) : Boolean
 		{
 
-			var fonts : Array = Font.enumerateFonts( true );
+			var fonts : Array = Font.enumerateFonts( false );
 
 			for each ( var font : Font in fonts )
 			{

@@ -8,7 +8,7 @@
 //    |::.. . |                
 //    `-------'      
 //                       
-//   3lbs Copyright 2013 
+//   3lbs Copyright 2014 
 //   For more information see http://www.3lbs.com 
 //   All rights reserved. 
 //
@@ -19,8 +19,6 @@ package htmlrenderer.parser.loader
 
 	import flash.filesystem.File;
 	import flash.utils.Dictionary;
-	
-	import htmlrenderer.util.HTMLUtils;
 	
 	import totem.core.Destroyable;
 	import totem.core.IDestroyable;
@@ -34,13 +32,15 @@ package htmlrenderer.parser.loader
 
 		public var tags : Array = [ "img", "object" ];
 
-		private var _fileURL : File;
+
+		private var enque : Vector.<Asset> = new Vector.<Asset>();
+
+		private var totalQue : int = 3;
 
 		private var types : Array = [ ".png", ".gif", ".swf", ".jpg", ".css" ];
 
-		public function AssetManager( baseURL : String )
+		public function AssetManager( )
 		{
-			_fileURL = new File( baseURL );
 		}
 
 		override public function destroy() : void
@@ -57,8 +57,6 @@ package htmlrenderer.parser.loader
 				delete resourceMap[ key ];
 			}
 
-			_fileURL = null;
-
 			super.destroy();
 		}
 
@@ -72,7 +70,7 @@ package htmlrenderer.parser.loader
 			return resourceMap[ id ] != null;
 		}
 
-		public function loadAsset( url : String, assetClassType : Class, ... arg ) : Asset
+		public function loadAsset( url : String, assetClassType : Class ) : Asset
 		{
 			var asset : Asset;
 
@@ -82,15 +80,17 @@ package htmlrenderer.parser.loader
 			}
 			else
 			{
-				var assetFile : File = _fileURL.resolvePath( HTMLUtils.cleanURL( url ));
+
+				var assetFile : File = new File( url );
 
 				if ( assetFile.exists == true )
 				{
 					if ( types.indexOf( assetFile.type ) > -1 )
 					{
-						asset = new assetClassType( assetFile.nativePath );
+						asset = new assetClassType( assetFile.url );
 						asset.id = url;
 						resourceMap[ url ] = asset;
+
 					}
 					else
 					{

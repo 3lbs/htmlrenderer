@@ -19,12 +19,13 @@ package htmlrenderer.parser.chain
 
 	import flash.display.Bitmap;
 	import flash.display.MovieClip;
-
+	
 	import htmlrenderer.html.ElementImage;
 	import htmlrenderer.parser.ImagesLoadTreeNode;
 	import htmlrenderer.parser.ParseTreeNode;
 	import htmlrenderer.parser.loader.AssetManager;
 	import htmlrenderer.parser.loader.ImageLoader;
+	import htmlrenderer.util.HTMLUtils;
 
 	public class ImgLink extends BaseLink
 	{
@@ -44,8 +45,9 @@ package htmlrenderer.parser.chain
 				var element : ElementImage = createElement( treeNode.document, treeNode.element, node, INLINE, ElementImage ) as ElementImage;
 
 				var token : ParseTreeNode;
-				var url : String = node.@src.toString();
-
+				var url : String =  HTMLUtils.cleanURL( node.@src.toString() );
+				url = treeNode.document.baseFile.resolvePath( url ).url;
+				
 				var assetManager : AssetManager = treeNode.document.assetManager;
 
 				var imageLoader : ImageLoader = assetManager.loadAsset( url, ImageLoader ) as ImageLoader;

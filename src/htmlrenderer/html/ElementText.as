@@ -8,7 +8,7 @@
 //    |::.. . |                
 //    `-------'      
 //                       
-//   3lbs Copyright 2013 
+//   3lbs Copyright 2014 
 //   For more information see http://www.3lbs.com 
 //   All rights reserved. 
 //
@@ -20,6 +20,7 @@ package htmlrenderer.html
 	import flash.display.Sprite;
 	import flash.geom.Rectangle;
 	import flash.text.StyleSheet;
+	import flash.text.engine.FontLookup;
 	import flash.text.engine.GroupElement;
 	import flash.text.engine.Kerning;
 	import flash.text.engine.RenderingMode;
@@ -73,6 +74,7 @@ package htmlrenderer.html
 			super( document, element, xml, pStyle );
 
 			_styleSheet = document.css.styleSheet;
+			
 		}
 
 		// need to make this a system that can accept more than one block of text.
@@ -83,33 +85,21 @@ package htmlrenderer.html
 
 		override public function destroy() : void
 		{
+			
+			_styleSheet.clear();
 			_styleSheet = null;
 
+			
 			textFlow = null;
 
 			_groupElement = null;
 
 			_dispatcher.destroy();
 			_dispatcher = null;
-			
+
 			textSprite = null;
 
 			super.destroy();
-		}
-
-		override protected function draw() : void
-		{
-			removeChildren();
-
-			parse();
-
-			if ( _computedStyles.hasOwnProperty( "textShadow" ))
-			{
-				var boxShadow : String = _computedStyles.textShadow;
-				ElementUtil.drawShadow( boxShadow, textSprite );
-			}
-
-			super.draw();
 		}
 
 		/**
@@ -141,6 +131,7 @@ package htmlrenderer.html
 			{
 				computedStyles.fontFamily = StringUtil.toTitleCase( computedStyles.fontFamily.split( "-" ).join( " " ));
 			}
+			
 
 			if ( computedStyles.fontWeight != null )
 			{
@@ -157,6 +148,21 @@ package htmlrenderer.html
 				computedStyles.color = HTMLUtils.convertCSS_RGBColor( computedStyles.color );
 			}
 
+		}
+
+		override protected function draw() : void
+		{
+			removeChildren();
+
+			parse();
+
+			if ( _computedStyles.hasOwnProperty( "textShadow" ))
+			{
+				var boxShadow : String = _computedStyles.textShadow;
+				ElementUtil.drawShadow( boxShadow, textSprite );
+			}
+
+			super.draw();
 		}
 
 		protected function handleBuildComplete( event : CompositionCompleteEvent ) : void
@@ -179,7 +185,12 @@ package htmlrenderer.html
 
 			// wipe out the default inherits - format take precendence over CSS - this simplifies the example
 			//textFlow.format = null;
-			
+
+			if ( !FontUtil.hasFont(  "bowlby one" ))
+			{
+				trace( "dont ahve" );
+			}
+
 			textFlow.renderingMode = RenderingMode.CFF;
 			textFlow.paddingTop = computedStyles.padding.top;
 			textFlow.paddingBottom = computedStyles.padding.bottom;
@@ -188,6 +199,7 @@ package htmlrenderer.html
 			textFlow.kerning = Kerning.ON;
 			textFlow.fontSize = computedStyles.fontSize;
 			textFlow.fontFamily = computedStyles.fontFamily;
+			textFlow.fontLookup = FontLookup.EMBEDDED_CFF;
 			textFlow.fontWeight = computedStyles.fontWeight;
 			textFlow.color = computedStyles.color;
 

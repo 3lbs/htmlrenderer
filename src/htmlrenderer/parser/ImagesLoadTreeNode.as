@@ -20,18 +20,15 @@ package htmlrenderer.parser
 	import flash.display.Bitmap;
 	import flash.display.MovieClip;
 	import flash.events.Event;
-	import flash.filesystem.File;
 	
-	import htmlrenderer.html.ElementImage;
 	import htmlrenderer.html.Document;
 	import htmlrenderer.html.ElementBase;
+	import htmlrenderer.html.ElementImage;
 	import htmlrenderer.parser.loader.ImageLoader;
 
 	public class ImagesLoadTreeNode extends ParseLoadTreeNode
 	{
 
-		private var _fileURL : File;
-		
 		public function ImagesLoadTreeNode( document : Document = null, element : ElementBase = null, node : XML = null )
 		{
 			super( document, element, node );
@@ -48,8 +45,9 @@ package htmlrenderer.parser
 				var image : * = loader.data;
 				var url : String = loader.id;
 
-				element.rawStyle.width = node.@width.toString() || image.width;
-				element.rawStyle.height = node.@height.toString() || image.height;
+				element.rawStyle.width = node.@width.toString() || 0; // image.width;
+				element.rawStyle.height = node.@height.toString() || 0; //image.height;
+				
 
 				if ( image is Bitmap )
 				{

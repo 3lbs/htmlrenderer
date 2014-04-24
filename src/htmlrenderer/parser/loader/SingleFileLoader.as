@@ -42,6 +42,7 @@ package htmlrenderer.parser.loader
 		{
 			removeEvents();
 			
+			urlLoader.data = null;
 			urlLoader = null;
 			
 			super.destroy();
@@ -64,7 +65,6 @@ package htmlrenderer.parser.loader
 
 		protected function handleComplete( event : Event ) : void
 		{
-			
 			removeEvents();
 			finished();
 		}
@@ -72,6 +72,8 @@ package htmlrenderer.parser.loader
 		protected function handleError( event : IOErrorEvent ) : void
 		{
 			removeEvents();
+			
+			failed();
 			throw new Error( event.text );
 		}
 

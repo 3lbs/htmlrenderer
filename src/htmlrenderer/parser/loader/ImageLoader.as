@@ -8,7 +8,7 @@
 //    |::.. . |                
 //    `-------'      
 //                       
-//   3lbs Copyright 2013 
+//   3lbs Copyright 2014 
 //   For more information see http://www.3lbs.com 
 //   All rights reserved. 
 //
@@ -24,8 +24,9 @@ package htmlrenderer.parser.loader
 	import flash.events.IOErrorEvent;
 	import flash.net.URLRequest;
 	import flash.system.ApplicationDomain;
+	import flash.system.ImageDecodingPolicy;
 	import flash.system.LoaderContext;
-	
+
 	import htmlrenderer.html.Document;
 
 	public class ImageLoader extends Asset
@@ -86,8 +87,8 @@ package htmlrenderer.parser.loader
 			if ( _status != EMPTY )
 				return;
 
-			var context : LoaderContext = new LoaderContext( true, new ApplicationDomain( ApplicationDomain.currentDomain ) );
-
+			var context : LoaderContext = new LoaderContext( true, new ApplicationDomain( ApplicationDomain.currentDomain ));
+			context.imageDecodingPolicy = ImageDecodingPolicy.ON_LOAD;
 			//loader.load( req, context );
 
 			var request : URLRequest = new URLRequest( url );
@@ -99,6 +100,7 @@ package htmlrenderer.parser.loader
 
 		protected function handleComplete( event : Event ) : void
 		{
+
 			removeEvents();
 			finished();
 		}
@@ -106,12 +108,8 @@ package htmlrenderer.parser.loader
 		protected function handleError( event : IOErrorEvent ) : void
 		{
 			removeEvents();
+			failed();
 			throw new Error( event.text );
-		}
-
-		protected function simpleLoaderInit( event : Event ) : void
-		{
-			dispatchEvent( event );
 		}
 
 		override protected function removeEvents() : void
@@ -119,6 +117,11 @@ package htmlrenderer.parser.loader
 			loader.contentLoaderInfo.removeEventListener( Event.COMPLETE, handleComplete );
 			loader.contentLoaderInfo.removeEventListener( IOErrorEvent.IO_ERROR, handleError );
 			loader.contentLoaderInfo.removeEventListener( Event.INIT, simpleLoaderInit );
+		}
+
+		protected function simpleLoaderInit( event : Event ) : void
+		{
+			dispatchEvent( event );
 		}
 	}
 }

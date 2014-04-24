@@ -48,7 +48,7 @@ package htmlrenderer.html.css
 		{
 			for each ( var mediaBlock : MediaBlockStyle in blocks )
 			{
-				if ( mediaBlock.max_width <= width )
+				if ( width <= mediaBlock.max_width )
 				{
 					return mediaBlock.getStyle( styleName );
 				}
@@ -60,7 +60,7 @@ package htmlrenderer.html.css
 		{
 			for each ( var mediaBlock : MediaBlockStyle in blocks )
 			{
-				if ( mediaBlock.max_width <= width )
+				if ( width <= mediaBlock.max_width )
 				{
 					return mediaBlock.hasStyle( styleName );
 				}

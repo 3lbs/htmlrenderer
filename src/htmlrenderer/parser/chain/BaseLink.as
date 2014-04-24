@@ -57,6 +57,11 @@ package htmlrenderer.parser.chain
 
 		public function destroy() : void
 		{
+			if ( successor )
+			{
+				successor.destroy();
+			}
+			
 			successor = null;
 		}
 

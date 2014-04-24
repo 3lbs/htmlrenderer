@@ -17,6 +17,8 @@
 package htmlrenderer
 {
 
+	import flash.filesystem.File;
+
 	import htmlrenderer.event.HTMLEvent;
 	import htmlrenderer.html.Document;
 	import htmlrenderer.parser.loader.AssetManager;
@@ -27,6 +29,10 @@ package htmlrenderer
 
 	public class HTMLRenderer extends Destroyable
 	{
+
+		public var baseURL : File;
+
+		private var _baseFont : int = 18;
 
 		private var _fontURLFiles : Array = [];
 
@@ -40,6 +46,16 @@ package htmlrenderer
 		public function addFontURL( url : String ) : void
 		{
 			_fontURLFiles.push( url );
+		}
+
+		public function get baseFont() : int
+		{
+			return _baseFont;
+		}
+
+		public function set baseFont( value : int ) : void
+		{
+			_baseFont = value;
 		}
 
 		override public function destroy() : void
@@ -60,13 +76,17 @@ package htmlrenderer
 		public function renderDocument( source : String, width : int, height : int ) : IPromise
 		{
 			var document : Document = new Document( width, height, assetManager );
+			document.baseFile = baseURL;
+
+			document.baseFont = _baseFont;
 
 			if ( _fontURLFiles.length > 0 )
 			{
 				document.fontURLFiles = _fontURLFiles;
 			}
+
 			var defferedEventDispatcher : DeferredEventDispatcher = new DeferredEventDispatcher( document );
-			defferedEventDispatcher.resolveOn( HTMLEvent.PARSE_COMPLETE_EVENT );
+			defferedEventDispatcher.resolveOn( HTMLEvent.DRAW_COMPLETE_EVENT );
 
 			document.render( source );
 

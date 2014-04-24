@@ -449,6 +449,9 @@ package htmlrenderer.html.css
 				}
 			}
 
+			
+			_styleSheet = new StylesBase();
+			
 			try
 			{
 				_styleSheet.parseCSS( DEFAULT_CSS + defaultCSS );

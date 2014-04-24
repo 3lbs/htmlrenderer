@@ -35,9 +35,6 @@ package htmlrenderer.html.css
 		
 		public var tailSortedStyles : Object = {};
 		
-		private var tempSheet : StyleSheet = new StyleSheet();
-		
-
 		override public function clear() : void
 		{
 			super.clear();
@@ -56,6 +53,8 @@ package htmlrenderer.html.css
 		{
 			
 			super.parseCSS( cssText );
+			
+			var tempSheet : StyleSheet = new StyleSheet();
 			
 			// if (TAIL_SEARCH_ENABLED ) { //  && cssText.indexOf("inline{")
 			// grab the style names from cssText
