@@ -18,13 +18,15 @@ package htmlrenderer.parser.chain
 {
 
 	import flash.display.MovieClip;
-	
+
 	import htmlrenderer.html.ElementImage;
 	import htmlrenderer.parser.ParseTreeNode;
 	import htmlrenderer.parser.SWFLoadTreeNode;
 	import htmlrenderer.parser.loader.AssetManager;
 	import htmlrenderer.parser.loader.SWFFileLoader;
 	import htmlrenderer.util.HTMLUtils;
+
+	import totem.utils.URLUtil;
 
 	public class ObjectLink extends BaseLink
 	{
@@ -43,12 +45,13 @@ package htmlrenderer.parser.chain
 
 				var token : ParseTreeNode;
 
-				if ( node.@type == "application/x-shockwave-flash" )
+				var url : String = HTMLUtils.cleanURL( node.@data.toString());
+
+				if ( node.@type == "application/x-shockwave-flash" || URLUtil.getFileExtension( url ) == "swf" )
 				{
-					var url : String =  HTMLUtils.cleanURL( node.@data.toString() );
 
 					url = treeNode.document.baseFile.resolvePath( url ).url;
-					
+
 					var assetManager : AssetManager = treeNode.document.assetManager;
 
 					// swf object
@@ -71,7 +74,7 @@ package htmlrenderer.parser.chain
 					}
 					else
 					{
-						
+
 						token = new SWFLoadTreeNode( treeNode.document, element, node );
 
 						//imageLoader.load( assetUrl.nativePath );

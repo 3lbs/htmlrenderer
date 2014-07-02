@@ -47,7 +47,7 @@ package htmlrenderer.parser
 				element.rawStyle.height = node.@height.toString() || image.height;
 
 				ElementImage( element ).image = image;
-				MovieClip( image ).play();
+				//MovieClip( image ).play();
 			}
 
 			super.finished( event );

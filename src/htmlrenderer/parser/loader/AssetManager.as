@@ -76,6 +76,7 @@ package htmlrenderer.parser.loader
 
 			if ( hasAsset( url ))
 			{
+				trace("already exsist this file in asset")
 				return getAsset( url );
 			}
 			else
@@ -85,7 +86,7 @@ package htmlrenderer.parser.loader
 
 				if ( assetFile.exists == true )
 				{
-					if ( types.indexOf( assetFile.type ) > -1 )
+					if ( types.indexOf( assetFile.type.toLowerCase() ) > -1 )
 					{
 						asset = new assetClassType( assetFile.url );
 						asset.id = url;

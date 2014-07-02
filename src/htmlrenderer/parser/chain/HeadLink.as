@@ -8,7 +8,7 @@
 //    |::.. . |                
 //    `-------'      
 //                       
-//   3lbs Copyright 2013 
+//   3lbs Copyright 2014 
 //   For more information see http://www.3lbs.com 
 //   All rights reserved. 
 //
@@ -17,6 +17,9 @@
 package htmlrenderer.parser.chain
 {
 
+	import flash.utils.getDefinitionByName;
+
+	import htmlrenderer.html.ScriptBase;
 	import htmlrenderer.parser.CSSLoadTreeNode;
 	import htmlrenderer.parser.ParseTreeNode;
 	import htmlrenderer.parser.loader.Asset;
@@ -53,10 +56,10 @@ package htmlrenderer.parser.chain
 				{
 					if ( xml.localName() == "link" )
 					{
-						url =  HTMLUtils.cleanURL( xml.@href.toString() );
+						url = HTMLUtils.cleanURL( xml.@href.toString());
 						//var linkLoader : SingleFileLoader = new SingleFileLoader( url );
 						url = treeNode.document.baseFile.resolvePath( url ).url;
-						
+
 						var cssLoader : Asset = assetManager.loadAsset( url, SingleFileLoader );
 
 						parseToken.addLoader( cssLoader );
@@ -81,6 +84,18 @@ package htmlrenderer.parser.chain
 								}
 							}
 						}
+
+						var asClass : String = xml.@asclass.toString();
+
+						if ( asClass )
+						{
+							var clazz : Class = getDefinitionByName( asClass ) as Class;
+
+							var script : ScriptBase = new clazz( treeNode.document );
+
+							treeNode.document.addScript( script );
+
+						}
 					}
 				}
 
@@ -95,7 +110,7 @@ package htmlrenderer.parser.chain
 							var fontLoader : FontLoader = assetManager.loadAsset( url, FontLoader ) as FontLoader;
 							fontLoader.fontNames = unloadedFonts;
 							parseToken.addLoader( fontLoader );
-							//fontLoader.start();
+								//fontLoader.start();
 						}
 					}
 				}

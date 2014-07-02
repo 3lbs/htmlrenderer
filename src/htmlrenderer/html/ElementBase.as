@@ -77,7 +77,7 @@ package htmlrenderer.html
 
 		protected var _computedStyles : Object;
 
-		protected var style : Object;
+		protected var _rawStyle : Object;
 
 		private const BASE_PROPERTIES : Array = [ LEFT, TOP, WIDTH, HEIGHT ];
 
@@ -107,7 +107,7 @@ package htmlrenderer.html
 
 			_allStyles = styles || _defaultStyleObject;
 
-			style = _allStyles[ _currentState ];
+			_rawStyle = _allStyles[ _currentState ];
 		}
 
 		public function addElement( child : ElementBase ) : ElementBase
@@ -199,7 +199,7 @@ package htmlrenderer.html
 
 			_computedStyles = null;
 
-			style = null;
+			_rawStyle = null;
 
 			while ( images.length )
 				images.pop();
@@ -226,7 +226,12 @@ package htmlrenderer.html
 
 		public function get rawStyle() : Object
 		{
-			return style;
+			return _rawStyle;
+		}
+
+		public function get style() : Object
+		{
+			return _allStyles[ _currentState ];
 		}
 
 		public function updateDisplay() : void
@@ -306,6 +311,21 @@ package htmlrenderer.html
 		protected function draw() : void
 		{
 			graphics.clear();
+
+			if ( _computedStyles.hasOwnProperty( "display" ))
+			{
+				var display : String = _computedStyles.display;
+				if ( display == "none" )
+				{
+					_computedStyles.width = 0;
+					_computedStyles.height = 0;
+					return;
+				}
+				else if ( display == "block" )
+				{
+					visible = true;
+				}
+			}
 
 			if ( _computedStyles.hasOwnProperty( "mask" ))
 			{
@@ -429,8 +449,6 @@ package htmlrenderer.html
 
 			if ( _computedStyles.background.url )
 			{
-
-				trace( _computedStyles.background.url );
 				imageBackground();
 			}
 
@@ -524,7 +542,7 @@ package htmlrenderer.html
 			var bitmapLoader : ImageLoader = assetLoader.getAsset( url ) as ImageLoader;
 			var bitmapData : BitmapData;
 
-			if ( bitmapLoader )
+			if ( bitmapLoader && bitmapLoader.isComplete())
 			{
 
 				bitmapData = bitmapLoader.bitmapData;
@@ -545,10 +563,15 @@ package htmlrenderer.html
 			}
 			else
 			{
-				bitmapLoader = assetLoader.loadAsset( url, ImageLoader ) as ImageLoader;
-				_loaders.push( bitmapLoader );
-				bitmapLoader.addEventListener( Event.COMPLETE, handleBackgroundLoaded );
-				bitmapLoader.start();
+
+				if ( !assetLoader.hasAsset( url ))
+				{
+					bitmapLoader = assetLoader.loadAsset( url, ImageLoader ) as ImageLoader;
+					_loaders.push( bitmapLoader );
+					bitmapLoader.addEventListener( Event.COMPLETE, handleBackgroundLoaded );
+					bitmapLoader.start();
+
+				}
 
 			}
 

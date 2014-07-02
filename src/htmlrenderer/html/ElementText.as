@@ -115,7 +115,7 @@ package htmlrenderer.html
 		 */
 		public function set text( value : String ) : void
 		{
-			if ( value !== _text && style != null )
+			if ( value !== _text && _rawStyle != null )
 			{
 				_text = value;
 			}
@@ -188,7 +188,6 @@ package htmlrenderer.html
 
 			if ( !FontUtil.hasFont(  "bowlby one" ))
 			{
-				trace( "dont ahve" );
 			}
 
 			textFlow.renderingMode = RenderingMode.CFF;

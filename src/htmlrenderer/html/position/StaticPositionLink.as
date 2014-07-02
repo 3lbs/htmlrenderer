@@ -85,11 +85,14 @@ package htmlrenderer.html.position
 					trace( "element name", element.name );
 
 					// display:none;
+					
+					element.visible = true;
+					
 					if ( style.display == "none" )
 					{
 						style.width = 0;
 						style.height = 0;
-						element.visible = false;
+						//element.visible = false;
 					}
 
 					if ( style.display == "inline" || style.display == "inline-block" )

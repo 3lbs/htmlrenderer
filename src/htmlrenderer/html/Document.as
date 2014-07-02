@@ -55,6 +55,8 @@ package htmlrenderer.html
 
 		public var layoutPosition : PositionBaseLink;
 
+		public var onload : String;
+
 		public var parser : Parser;
 
 		private var _baseFont : int = 16;
@@ -64,6 +66,8 @@ package htmlrenderer.html
 		private var _title : String;
 
 		private var documentBaseElement : Node;
+
+		private var scripts : Vector.<ScriptBase> = new Vector.<ScriptBase>();
 
 		public function Document( w : int, h : int, assetManager : AssetManager )
 		{
@@ -100,14 +104,19 @@ package htmlrenderer.html
 
 		}
 
-		public function set baseFont(value:int):void
+		public function addScript( script : ScriptBase ) : void
 		{
-			_baseFont = value;
+			scripts.push( script );
 		}
 
 		public function get baseFont() : int
 		{
 			return _baseFont;
+		}
+
+		public function set baseFont( value : int ) : void
+		{
+			_baseFont = value;
 		}
 
 		override public function destroy() : void
@@ -119,6 +128,11 @@ package htmlrenderer.html
 
 			documentBaseElement.destroy();
 			documentBaseElement = null;
+
+			while ( scripts.length )
+				scripts.pop().destroy();
+
+			scripts = null;
 
 			super.destroy();
 		}
@@ -270,6 +284,11 @@ package htmlrenderer.html
 			}
 		}
 
+		public function update() : void
+		{
+			documentBaseElement.updateDisplay();
+		}
+
 		protected function handleDrawCompleteEvent( event : HTMLEvent ) : void
 		{
 			wait( 10, handleDelay, event );
@@ -278,6 +297,25 @@ package htmlrenderer.html
 		protected function handleParseComplete( event : HTMLEvent ) : void
 		{
 			parser.removeEventListener( HTMLEvent.PARSE_COMPLETE_EVENT, handleParseComplete );
+
+			if ( onload )
+			{
+				var i : int = scripts.length;
+
+				while ( i-- )
+				{
+					var sc : ScriptBase = scripts[ i ];
+
+					var func : String = onload.match( /\w+/g )[ 0 ];
+
+					if ( sc.hasOwnProperty( func ))
+					{
+						sc[ func ].call();
+						trace( "has" );
+					}
+				}
+			}
+			//onload();
 
 			documentBaseElement.updateDisplay();
 

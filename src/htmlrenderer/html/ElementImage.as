@@ -30,6 +30,19 @@ package htmlrenderer.html
 			super( document, element, xml, pStyle );
 		}
 
+		override public function destroy() : void
+		{
+
+			if ( _image.hasOwnProperty( "destroy" ))
+			{
+				_image[ "destroy" ].call();
+			}
+			
+			_image = null;
+			
+			super.destroy();
+		}
+
 		public function get image() : DisplayObject
 		{
 			return _image;
@@ -43,7 +56,6 @@ package htmlrenderer.html
 
 		override protected function draw() : void
 		{
-			super.draw();
 
 			scaleImage();
 
@@ -53,6 +65,7 @@ package htmlrenderer.html
 				addChild( _image );
 			}
 
+			super.draw();
 		}
 
 		private function scaleImage() : void

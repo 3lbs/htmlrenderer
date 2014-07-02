@@ -47,9 +47,10 @@ package htmlrenderer.parser.loader
 			loader = new Loader();
 			loader.contentLoaderInfo.addEventListener( Event.COMPLETE, onDataComplete );
 			loader.contentLoaderInfo.addEventListener( IOErrorEvent.IO_ERROR, handleError );
-			
+
 			var _lc : LoaderContext = new LoaderContext( false, ApplicationDomain.currentDomain, null );
 			_lc.allowCodeImport = true;
+			_lc.allowLoadBytesCodeExecution = true;
 			
 			loader.loadBytes( data, _lc );
 		}

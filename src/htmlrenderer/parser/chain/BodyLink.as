@@ -8,7 +8,7 @@
 //    |::.. . |                
 //    `-------'      
 //                       
-//   3lbs Copyright 2013 
+//   3lbs Copyright 2014 
 //   For more information see http://www.3lbs.com 
 //   All rights reserved. 
 //
@@ -37,9 +37,16 @@ package htmlrenderer.parser.chain
 				element.rawStyle.background.alpha = 0;
 
 				var headNode : ParseTreeNode = treeNode.getNodeByID( HeadLink.HEAD_ID );
-				
-				var token : ParseTreeNode = new ParseTreeNode( treeNode.document, element, node  );
+
+				var token : ParseTreeNode = new ParseTreeNode( treeNode.document, element, node );
 				token.requires( headNode );
+
+				var onload : String = node.@onload.toString();
+
+				if ( onload )
+				{
+					treeNode.document.onload = onload;
+				}
 
 				return token;
 

@@ -51,6 +51,7 @@
     <classEntry path="htmlrenderer.util.FontUtil"/>
     <classEntry path="htmlrenderer.util.HTMLUtils"/>
     <classEntry path="htmlrenderer.util.TypeUtils"/>
+    <classEntry path="htmlrenderer.html.ScriptBase"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
