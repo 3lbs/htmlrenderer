@@ -42,6 +42,7 @@ package htmlrenderer.parser.loader
 		{
 			removeEvents();
 			
+			urlLoader.close();
 			urlLoader.data = null;
 			urlLoader = null;
 			

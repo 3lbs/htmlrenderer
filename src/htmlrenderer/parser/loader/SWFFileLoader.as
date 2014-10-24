@@ -36,6 +36,7 @@ package htmlrenderer.parser.loader
 		
 		override public function destroy() : void
 		{
+			super.destroy();
 			loader.unloadAndStop();
 			loader = null;
 		}
@@ -63,7 +64,7 @@ package htmlrenderer.parser.loader
 			
 			var FontLibrary : Class;
 			
-			var applicationDomain : ApplicationDomain = loader.content.loaderInfo.applicationDomain;
+			//var applicationDomain : ApplicationDomain = loader.content.loaderInfo.applicationDomain;
 	
 			
 			finished();

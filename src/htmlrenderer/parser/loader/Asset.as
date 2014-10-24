@@ -19,7 +19,7 @@ package htmlrenderer.parser.loader
 
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
-
+	
 	import totem.events.RemovableEventDispatcher;
 
 	public class Asset extends RemovableEventDispatcher
@@ -85,6 +85,8 @@ package htmlrenderer.parser.loader
 		protected function failed() : void
 		{
 			_status = FAILED;
+	
+			throw new Error ( "failed to load" );
 			dispatchEvent( new IOErrorEvent( IOErrorEvent.IO_ERROR ));
 		}
 

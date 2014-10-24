@@ -126,14 +126,14 @@ package htmlrenderer.html
 
 			_html = null;
 
-			documentBaseElement.destroy();
-			documentBaseElement = null;
 
 			while ( scripts.length )
 				scripts.pop().destroy();
 
 			scripts = null;
 
+			documentBaseElement.destroy();
+			documentBaseElement = null;
 			super.destroy();
 		}
 
@@ -293,6 +293,11 @@ package htmlrenderer.html
 		{
 			wait( 10, handleDelay, event );
 		}
+		
+		public function set display ( value : Boolean ) : void
+		{
+			documentBaseElement.display = value;	
+		}
 
 		protected function handleParseComplete( event : HTMLEvent ) : void
 		{
@@ -316,6 +321,8 @@ package htmlrenderer.html
 				}
 			}
 			//onload();
+			
+			trace("parsed all content!!!");
 
 			documentBaseElement.updateDisplay();
 

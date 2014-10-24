@@ -20,11 +20,13 @@ package htmlrenderer.parser
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
 	import flash.events.IOErrorEvent;
-
+	
+	import flashx.textLayout.debug.assert;
+	
 	import htmlrenderer.html.Document;
 	import htmlrenderer.html.ElementBase;
 	import htmlrenderer.parser.loader.Asset;
-
+	
 	import totem.monitors.promise.wait;
 
 	public class ParseLoadTreeNode extends ParseTreeNode
@@ -151,6 +153,8 @@ package htmlrenderer.parser
 
 		protected function handleOnFailed( event : Event ) : void
 		{
+			var loader : Asset = event.target as Asset;
+			trace( "failed to load:",  loader.getURL() );
 			complete();
 		}
 

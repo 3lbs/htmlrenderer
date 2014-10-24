@@ -37,9 +37,9 @@ package htmlrenderer.html
 			{
 				_image[ "destroy" ].call();
 			}
-			
+
 			_image = null;
-			
+
 			super.destroy();
 		}
 
@@ -56,13 +56,38 @@ package htmlrenderer.html
 
 		override protected function draw() : void
 		{
+			removeChildren();
+
+
+			if ( _computedStyles.hasOwnProperty( "display" ))
+			{
+				var display : String = _computedStyles.display;
+
+				if ( display == "none" )
+				{
+					if ( _image )
+					{
+						_image.visible = false;
+
+						if ( _image.parent )
+						{
+							_image.parent.removeChild( _image );
+						}
+					}
+
+					super.draw();
+					return;
+				}
+			}
 
 			scaleImage();
-
+			
 			if ( _image )
 			{
 				_image.visible = true;
 				addChild( _image );
+				
+				
 			}
 
 			super.draw();
@@ -70,12 +95,14 @@ package htmlrenderer.html
 
 		private function scaleImage() : void
 		{
-			if ( _image && _computedStyles.hasOwnProperty( "maxWidth" ))
+			
+			//&& _computedStyles.hasOwnProperty( "maxWidth" )
+			if ( _image )
 			{
 
 				var maxWidth : * = _computedStyles.maxWidth;
 
-				if ( maxWidth != "100%" )
+				if ( maxWidth != null  && maxWidth != "100%" )
 				{
 					maxWidth = TypeUtils.cleanNumber( maxWidth, parentElement.computedStyles.width );
 					var scale : Number = maxWidth / image.width;

@@ -34,7 +34,7 @@ package htmlrenderer.parser.chain
 			{
 				var element : Node = createElement( treeNode.document, treeNode.element, node, BLOCK );
 				element.rawStyle.width = element.rawStyle.height = "100%";
-				element.rawStyle.background.alpha = 0;
+				//element.rawStyle.background.alpha = 0;
 
 				var headNode : ParseTreeNode = treeNode.getNodeByID( HeadLink.HEAD_ID );
 

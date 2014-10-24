@@ -18,11 +18,11 @@ package htmlrenderer
 {
 
 	import flash.filesystem.File;
-
+	
 	import htmlrenderer.event.HTMLEvent;
 	import htmlrenderer.html.Document;
 	import htmlrenderer.parser.loader.AssetManager;
-
+	
 	import totem.core.Destroyable;
 	import totem.monitors.promise.DeferredEventDispatcher;
 	import totem.monitors.promise.IPromise;
@@ -41,6 +41,7 @@ package htmlrenderer
 		public function HTMLRenderer( assetManager : AssetManager )
 		{
 			this.assetManager = assetManager;
+	
 		}
 
 		public function addFontURL( url : String ) : void

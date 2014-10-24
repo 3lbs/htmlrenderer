@@ -158,7 +158,8 @@ package htmlrenderer.html
 		{
 			if ( !_childrenElementList || dirty )
 			{
-				_childrenElementList = floatedRight.concat( floatedLeft ).concat( floatedNone ).concat( floatedRight );
+				
+				_childrenElementList = floatedRight.concat( floatedLeft ).concat( floatedNone );
 				_childrenElementList.sort( sortingFunction );
 				dirty = false;
 			}
@@ -210,6 +211,17 @@ package htmlrenderer.html
 			super.destroy();
 		}
 
+		public function set display( value : Boolean ) : void
+		{
+			var l : int = _childrenElementList.length;
+
+			for each ( var childElement : ElementBase in _childrenElementList )
+			{
+				childElement.display = value;
+			}
+
+		}
+
 		public function get elementRect() : Rectangle
 		{
 			return _elementRect;
@@ -229,6 +241,15 @@ package htmlrenderer.html
 			return _rawStyle;
 		}
 
+		public function setStyles( styles : Object ) : void
+		{
+
+			_allStyles = styles || _defaultStyleObject;
+
+			_rawStyle = _allStyles[ _currentState ];
+
+		}
+
 		public function get style() : Object
 		{
 			return _allStyles[ _currentState ];
@@ -245,6 +266,7 @@ package htmlrenderer.html
 			currentUpdateIndex = 0;
 			totalUpdateIndex = childrenElements.length;
 
+			
 			for each ( var childElement : ElementBase in childrenElements )
 			{
 				if ( childElement is ElementBase )
@@ -315,6 +337,7 @@ package htmlrenderer.html
 			if ( _computedStyles.hasOwnProperty( "display" ))
 			{
 				var display : String = _computedStyles.display;
+
 				if ( display == "none" )
 				{
 					_computedStyles.width = 0;
@@ -388,6 +411,7 @@ package htmlrenderer.html
 				graphics.endFill();
 
 				render();
+				trace( "completed", name );
 
 				dispatchEvent( new HTMLEvent( HTMLEvent.DRAW_COMPLETE_EVENT, this ));
 			}
@@ -409,6 +433,8 @@ package htmlrenderer.html
 
 				if ( _loaders.length == 0 )
 				{
+					trace( "completed", name );
+
 					dispatchEvent( new HTMLEvent( HTMLEvent.DRAW_COMPLETE_EVENT, this ));
 				}
 			}
@@ -579,6 +605,9 @@ package htmlrenderer.html
 
 		private function render() : void
 		{
+
+			//trace( " _computedStyles.heigh= " + _computedStyles.height );
+
 			if ( _computedStyles.height == 0 || _computedStyles.height == "auto" )
 			{
 				_computedStyles.height = Math.max( this.height, parentElement.computedStyles.height );

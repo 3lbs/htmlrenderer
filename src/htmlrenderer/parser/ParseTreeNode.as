@@ -174,6 +174,13 @@ package htmlrenderer.parser
 
 			var total : int = ( node ) ? node.children().length() : 0;
 			var _childXml : XML;
+			
+			if ( _requires && _requires.length )
+			{				
+				// update the styles of this node.  Body was loaded before css was ready
+				var style : Object = document.css.getElementStyles( node, element ).style;
+				element.setStyles( style );
+			}
 
 			for ( var i : int = 0; i < total; ++i )
 			{

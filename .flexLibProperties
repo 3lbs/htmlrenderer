@@ -52,6 +52,8 @@
     <classEntry path="htmlrenderer.util.HTMLUtils"/>
     <classEntry path="htmlrenderer.util.TypeUtils"/>
     <classEntry path="htmlrenderer.html.ScriptBase"/>
+    <classEntry path="htmlrenderer.util.ElementSWFBase"/>
+    <classEntry path="htmlrenderer.html.ElementInteractive"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

@@ -154,6 +154,17 @@ package htmlrenderer.html
 		{
 			removeChildren();
 
+			
+			if ( _computedStyles.hasOwnProperty( "display" ))
+			{
+				var display : String = _computedStyles.display;
+				if ( display == "none" )
+				{
+					super.draw();
+					return;
+				}
+			}
+			
 			parse();
 
 			if ( _computedStyles.hasOwnProperty( "textShadow" ))
@@ -185,10 +196,6 @@ package htmlrenderer.html
 
 			// wipe out the default inherits - format take precendence over CSS - this simplifies the example
 			//textFlow.format = null;
-
-			if ( !FontUtil.hasFont(  "bowlby one" ))
-			{
-			}
 
 			textFlow.renderingMode = RenderingMode.CFF;
 			textFlow.paddingTop = computedStyles.padding.top;

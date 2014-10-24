@@ -19,7 +19,7 @@ package htmlrenderer.parser.loader
 
 	import flash.filesystem.File;
 	import flash.utils.Dictionary;
-	
+
 	import totem.core.Destroyable;
 	import totem.core.IDestroyable;
 
@@ -32,14 +32,13 @@ package htmlrenderer.parser.loader
 
 		public var tags : Array = [ "img", "object" ];
 
-
 		private var enque : Vector.<Asset> = new Vector.<Asset>();
 
 		private var totalQue : int = 3;
 
 		private var types : Array = [ ".png", ".gif", ".swf", ".jpg", ".css" ];
 
-		public function AssetManager( )
+		public function AssetManager()
 		{
 		}
 
@@ -76,7 +75,7 @@ package htmlrenderer.parser.loader
 
 			if ( hasAsset( url ))
 			{
-				trace("already exsist this file in asset")
+				trace( "already exsist this file in asset" )
 				return getAsset( url );
 			}
 			else
@@ -86,7 +85,7 @@ package htmlrenderer.parser.loader
 
 				if ( assetFile.exists == true )
 				{
-					if ( types.indexOf( assetFile.type.toLowerCase() ) > -1 )
+					if ( types.indexOf( assetFile.type.toLowerCase()) > -1 )
 					{
 						asset = new assetClassType( assetFile.url );
 						asset.id = url;
@@ -106,6 +105,21 @@ package htmlrenderer.parser.loader
 			}
 
 			return asset;
+		}
+
+		public function unload( loader : Asset ) : AssetManager
+		{
+
+			if ( hasAsset( loader.id ))
+			{
+				resourceMap[ loader.id ] = null;
+				delete resourceMap[ loader.id ];
+			}
+
+			if ( !loader.destroyed )
+				loader.destroy();
+
+			return null;
 		}
 	}
 }

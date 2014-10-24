@@ -17,6 +17,8 @@
 package htmlrenderer.html.css
 {
 
+	import flashx.textLayout.operations.CreateSubParagraphGroupOperation;
+
 	import htmlrenderer.util.HTMLUtils;
 	import htmlrenderer.util.TypeUtils;
 
@@ -132,7 +134,56 @@ package htmlrenderer.html.css
 				{
 					value = styleObject[ prop ];
 
-					if ( prop == CSSProperties.BORDER )
+					switch ( prop )
+					{
+						case CSSProperties.BORDER:
+							var parts : Array = value.split( " " );
+							_border.weight = parseFloat( parts[ 0 ]);
+							_border.type = parts[ 1 ] || "solid";
+
+							var rgbArray : Array = parts[ 2 ].match( getDelemitedNumbers );
+							_border.color = HTMLUtils.convertRGB( rgbArray[ 0 ], rgbArray[ 1 ], rgbArray[ 2 ]);
+
+							if ( rgbArray[ 3 ])
+							{
+								_border.alpha = parseFloat( rgbArray[ 3 ]);
+							}
+							break;
+						case CSSProperties.BORDER_TOP_LEFT_RADIUS:
+						case CSSProperties.BORDER_TOP_RIGHT_RADIUS:
+						case CSSProperties.BORDER_BOTTOM_LEFT_RADIUS:
+						case CSSProperties.BORDER_BOTTOM_RIGHT_RADIUS:
+
+							if ( _border.shape != "RoundRectComplex" )
+							{
+								_border.shape = "RoundRectComplex";
+								_border.topLeftRadius = 0;
+								_border.topRightRadius = 0;
+								_border.bottomLeftRadius = 0;
+								_border.bottomRightRadius = 0;
+							}
+							if ( prop == CSSProperties.BORDER_TOP_LEFT_RADIUS )
+							{
+								_border.topLeftRadius = parseFloat( value );
+							}
+							else if ( prop == CSSProperties.BORDER_TOP_RIGHT_RADIUS )
+							{
+								_border.topRightRadius = parseFloat( value );
+							}
+							else if ( prop == CSSProperties.BORDER_BOTTOM_LEFT_RADIUS )
+							{
+								_border.bottomLeftRadius = parseFloat( value );
+							}
+							else if ( prop == CSSProperties.BORDER_BOTTOM_RIGHT_RADIUS )
+							{
+								_border.bottomRightRadius = parseFloat( value );
+							}
+							break;
+						default:
+							_border[ prop ] = value;
+
+					}
+					/*if ( prop == CSSProperties.BORDER )
 					{
 						var parts : Array = value.split( " " );
 						_border.weight = parseFloat( parts[ 0 ]);
@@ -169,7 +220,7 @@ package htmlrenderer.html.css
 					else
 					{
 						_border[ prop ] = value;
-					}
+					}*/
 				}
 			}
 			return _border;

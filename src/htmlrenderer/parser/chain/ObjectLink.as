@@ -18,14 +18,15 @@ package htmlrenderer.parser.chain
 {
 
 	import flash.display.MovieClip;
-
+	
 	import htmlrenderer.html.ElementImage;
+	import htmlrenderer.html.ElementInteractive;
 	import htmlrenderer.parser.ParseTreeNode;
 	import htmlrenderer.parser.SWFLoadTreeNode;
 	import htmlrenderer.parser.loader.AssetManager;
 	import htmlrenderer.parser.loader.SWFFileLoader;
 	import htmlrenderer.util.HTMLUtils;
-
+	
 	import totem.utils.URLUtil;
 
 	public class ObjectLink extends BaseLink
@@ -41,7 +42,7 @@ package htmlrenderer.parser.chain
 			if ( request == "object" )
 			{
 
-				var element : ElementImage = createElement( treeNode.document, treeNode.element, node, INLINE, ElementImage ) as ElementImage;
+				var element : ElementImage;
 
 				var token : ParseTreeNode;
 
@@ -50,6 +51,7 @@ package htmlrenderer.parser.chain
 				if ( node.@type == "application/x-shockwave-flash" || URLUtil.getFileExtension( url ) == "swf" )
 				{
 
+					element = createElement( treeNode.document, treeNode.element, node, INLINE, ElementInteractive ) as ElementInteractive;
 					url = treeNode.document.baseFile.resolvePath( url ).url;
 
 					var assetManager : AssetManager = treeNode.document.assetManager;
@@ -67,7 +69,7 @@ package htmlrenderer.parser.chain
 						if ( image is MovieClip )
 						{
 							element.image = image.bitmapData;
-							MovieClip( image ).play();
+						//MovieClip( image ).play();
 						}
 
 						token = new ParseTreeNode( treeNode.document, element );
@@ -83,7 +85,6 @@ package htmlrenderer.parser.chain
 				}
 
 				return token;
-				trace( "catch" );
 			}
 
 			return super.handleRequest( request, treeNode, node );

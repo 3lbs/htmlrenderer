@@ -17,12 +17,12 @@
 package htmlrenderer.parser
 {
 
-	import flash.display.MovieClip;
 	import flash.events.Event;
-
+	
 	import htmlrenderer.html.Document;
 	import htmlrenderer.html.ElementBase;
 	import htmlrenderer.html.ElementImage;
+	import htmlrenderer.parser.loader.AssetManager;
 	import htmlrenderer.parser.loader.SWFFileLoader;
 
 	public class SWFLoadTreeNode extends ParseLoadTreeNode
@@ -46,8 +46,12 @@ package htmlrenderer.parser
 				element.rawStyle.width = node.@width.toString() || image.width;
 				element.rawStyle.height = node.@height.toString() || image.height;
 
+				loader.destroy();
+				
 				ElementImage( element ).image = image;
-				//MovieClip( image ).play();
+				
+				var assetManager : AssetManager = document.assetManager.unload( loader );
+				
 			}
 
 			super.finished( event );

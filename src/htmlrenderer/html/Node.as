@@ -37,6 +37,7 @@ package htmlrenderer.html
 			this.document = document;
 			_element = element;
 			_innerXML = xml
+				
 
 			if ( _element && _innerXML )
 			{
