@@ -27,7 +27,14 @@ package htmlrenderer.util
 
 		public static function cleanFontName( value : String ) : String
 		{
-			value = value.replace( "-", "_" );
+			//value = value.replace( "-", "_" );
+			
+			//trace("value before " + value );
+			var pattern:RegExp = /-/g;
+			value = value.replace(pattern,"_");
+			
+			value = value.replace(/["']/g, "")
+			//trace("value before " + value );
 			return value;
 		}
 

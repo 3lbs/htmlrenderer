@@ -44,6 +44,7 @@ package htmlrenderer.parser.loader
 			loader = null;
 		}
 
+
 		override protected function handleComplete( e : Event ) : void
 		{
 
@@ -66,12 +67,14 @@ package htmlrenderer.parser.loader
 			var FontLibrary : Class;
 
 			var applicationDomain : ApplicationDomain = loader.content.loaderInfo.applicationDomain;
+			//checkFonts();
 
 			for each ( var fontName : String in fontNames )
 			{
 				if ( applicationDomain.hasDefinition( fontName ))
 				{
 					FontLibrary = applicationDomain.getDefinition( fontName ) as Class;
+
 					if ( FontLibrary )
 					{
 						var font : Font = new FontLibrary();
@@ -80,7 +83,20 @@ package htmlrenderer.parser.loader
 				}
 			}
 
+			//checkFonts();
+
 			finished();
+		}
+
+		private function checkFonts() : void
+		{
+			trace( "================ font test ===============" );
+			var fonts : Array = Font.enumerateFonts();
+
+			for ( var i : int = 0; i < fonts.length; i++ )
+				trace( "Embedded font: " + fonts[ i ].fontName );
+
+			trace( "==========================================" );
 		}
 	}
 }

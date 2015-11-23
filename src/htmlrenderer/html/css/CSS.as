@@ -449,9 +449,8 @@ package htmlrenderer.html.css
 				}
 			}
 
-			
 			_styleSheet = new StylesBase();
-			
+
 			try
 			{
 				_styleSheet.parseCSS( DEFAULT_CSS + defaultCSS );
@@ -483,10 +482,28 @@ package htmlrenderer.html.css
 		private function cleanStyle( defaultObj : Object ) : void
 		{
 			defaultObj.border = CSSUtil.cleanBorder( defaultObj );
-			defaultObj.background = CSSUtil.cleanBackground( defaultObj );
-			defaultObj.margin = CSSUtil.cleanMargin( defaultObj );
-			defaultObj.padding = CSSUtil.cleanPadding( defaultObj );
+			
+			var background : Object = CSSUtil.cleanBackground( defaultObj );
+			
+			if ( background != null )
+			{
+				defaultObj.background = background; 
+			}
+			
+			var margin : Object = CSSUtil.cleanMargin( defaultObj );
+			
+			if ( margin != null )
+			{
+				defaultObj.margin = margin; 
+			}
+			
 			defaultObj.font = CSSUtil.cleanFont( defaultObj );
+			
+			var padding : Object = CSSUtil.cleanPadding( defaultObj );
+			if ( padding != null )
+			{
+				defaultObj.padding = padding;
+			}
 		}
 
 		private function doNodesClassStylesMatch( styleNameSection : String, classes : String = null ) : Boolean

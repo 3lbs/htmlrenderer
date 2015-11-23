@@ -8,7 +8,7 @@
 //    |::.. . |                
 //    `-------'      
 //                       
-//   3lbs Copyright 2013 
+//   3lbs Copyright 2014 
 //   For more information see http://www.3lbs.com 
 //   All rights reserved. 
 //
@@ -86,9 +86,9 @@ package htmlrenderer.html.css
 
 		public static const EMBED_FONTS : String = "embedFonts";
 
-		public static const FLOAT_LEFT : String = "left";
-		
 		public static const FLOAT : String = "float";
+
+		public static const FLOAT_LEFT : String = "left";
 
 		public static const FONT : String = "font";
 
@@ -131,6 +131,8 @@ package htmlrenderer.html.css
 		public static const MAX_CHARS : String = "maxChars";
 
 		public static const MIDDLE : String = "middle";
+
+		public static const MIN_HEIGHT : String = "minHeight";
 
 		public static const MOUSE_WHEEL_ENABLED : String = "mouseWheelEnabled";
 

@@ -17,6 +17,8 @@
 package htmlrenderer.html
 {
 
+	import flash.display.DisplayObject;
+	
 	import totem.display.ISWFObject;
 
 	public class ElementInteractive extends ElementImage implements ISWFObject
@@ -38,6 +40,15 @@ package htmlrenderer.html
 			ISWFObject( image ).display = value;
 		}
 
+		override public function set image( value : DisplayObject ) : void
+		{
+			//_image = value;
+			//_image.visible = false;
+
+			//value.addEventListener( 
+			super.image = value;
+		}
+
 		public function loadURL( value : String ) : void
 		{
 			ISWFObject( image ).loadURL( value );
@@ -53,6 +64,37 @@ package htmlrenderer.html
 		public function unload() : void
 		{
 			ISWFObject( image ).unload();
+		}
+
+		override protected function draw() : Boolean
+		{
+			//_computedStyles.width = image.width;
+			//_computedStyles.height = image.height;
+
+			return super.draw();
+		}
+
+		override protected function scaleImage() : void
+		{
+
+			//&& _computedStyles.hasOwnProperty( "maxWidth" )
+			if ( image )
+			{
+
+				var maxWidth : * = _computedStyles.maxWidth;
+
+				if ( maxWidth != null && maxWidth != "100%" )
+				{
+					//maxWidth = TypeUtils.cleanNumber( maxWidth, parentElement.computedStyles.width );
+					//var scale : Number = maxWidth / image.width;
+
+					//image.scaleX = scale;
+					//	image.scaleY = scale;
+				}
+
+					//	_computedStyles.width = image.width;
+					//_computedStyles.height = image.height;
+			}
 		}
 	}
 }

@@ -20,7 +20,7 @@ package htmlrenderer.html
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
 	import flash.filesystem.File;
-	
+
 	import htmlrenderer.event.HTMLEvent;
 	import htmlrenderer.html.css.CSS;
 	import htmlrenderer.html.position.AutoPositionLink;
@@ -29,7 +29,7 @@ package htmlrenderer.html
 	import htmlrenderer.parser.Parser;
 	import htmlrenderer.parser.loader.AssetManager;
 	import htmlrenderer.util.HTMLUtils;
-	
+
 	import totem.display.layout.TSprite;
 	import totem.monitors.promise.wait;
 
@@ -59,9 +59,15 @@ package htmlrenderer.html
 
 		public var parser : Parser;
 
-		private var _baseFont : int = 16;
+		public var properties : Object = new Object();
+
+		public var scriptLoc : String = "";
+
+		private var _baseFont : int = 10;
 
 		private var _html : XML;
+
+		private var _interactive : Boolean;
 
 		private var _title : String;
 
@@ -126,7 +132,6 @@ package htmlrenderer.html
 
 			_html = null;
 
-
 			while ( scripts.length )
 				scripts.pop().destroy();
 
@@ -137,24 +142,32 @@ package htmlrenderer.html
 			super.destroy();
 		}
 
+		public function set display( value : Boolean ) : void
+		{
+			documentBaseElement.display = value;
+		}
+
 		public function getElementById( id : String ) : ElementBase
 		{
 			var result : ElementBase;
 			function loop( target : DisplayObjectContainer ) : void
 			{
 				var length : int = target.numChildren;
+				var i : uint;
+				var child : *;
 
-				for ( var i : uint = 0; i < length; i++ )
+				for ( i = 0; i < length; i++ )
 				{
-					var child : * = target.getChildAt( i );
+					child = target.getChildAt( i );
 
-					if ( child is DisplayObjectContainer )
+					if ( child is DisplayObjectContainer && child is ElementBase )
 					{
 						var check : DisplayObject = child.getChildByName( id );
 
 						if ( check != null )
 						{
 							result = check as ElementBase;
+							break;
 						}
 						else
 						{
@@ -250,6 +263,11 @@ package htmlrenderer.html
 			return _html;
 		}
 
+		public function get interactive() : Boolean
+		{
+			return _interactive;
+		}
+
 		public function parseHTML( document : Document, target : Node, node : XML ) : void
 		{
 			_html = node;
@@ -293,11 +311,6 @@ package htmlrenderer.html
 		{
 			wait( 10, handleDelay, event );
 		}
-		
-		public function set display ( value : Boolean ) : void
-		{
-			documentBaseElement.display = value;	
-		}
 
 		protected function handleParseComplete( event : HTMLEvent ) : void
 		{
@@ -316,13 +329,12 @@ package htmlrenderer.html
 					if ( sc.hasOwnProperty( func ))
 					{
 						sc[ func ].call();
-						trace( "has" );
 					}
 				}
 			}
 			//onload();
-			
-			trace("parsed all content!!!");
+
+			trace( "parsed all content!!!" );
 
 			documentBaseElement.updateDisplay();
 

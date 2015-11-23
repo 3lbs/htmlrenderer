@@ -51,23 +51,33 @@ package htmlrenderer.html
 		public function set image( value : DisplayObject ) : void
 		{
 			_image = value;
-			_image.visible = false;
+			//_image.visible = false;
+			
+			//rawStyle.width = _image.width;
+		//	rawStyle.height = _image.height;
 		}
 
-		override protected function draw() : void
+		override protected function draw() : Boolean
 		{
 			removeChildren();
 
 
-			if ( _computedStyles.hasOwnProperty( "display" ))
+			if ( _computedStyles.hasOwnProperty( "display" ) || parentElement.computedStyles.hasOwnProperty( "display" ) )
 			{
 				var display : String = _computedStyles.display;
 
-				if ( display == "none" )
+				var parentDisplay : String = parentElement.computedStyles.display;
+				
+				if ( display == "none" || parentDisplay == "none" )
 				{
+					
+					_computedStyles.width = 0;
+					_computedStyles.height = 0;
+					_computedStyles.display = "none";
+					
 					if ( _image )
 					{
-						_image.visible = false;
+						//_image.visible = false;
 
 						if ( _image.parent )
 						{
@@ -75,8 +85,8 @@ package htmlrenderer.html
 						}
 					}
 
-					super.draw();
-					return;
+					
+					return super.draw();
 				}
 			}
 
@@ -86,14 +96,12 @@ package htmlrenderer.html
 			{
 				_image.visible = true;
 				addChild( _image );
-				
-				
 			}
 
-			super.draw();
+			return super.draw();
 		}
 
-		private function scaleImage() : void
+		protected function scaleImage() : void
 		{
 			
 			//&& _computedStyles.hasOwnProperty( "maxWidth" )

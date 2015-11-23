@@ -18,10 +18,12 @@ package htmlrenderer.parser
 {
 
 	import flash.events.Event;
-	
+
 	import htmlrenderer.html.Document;
 	import htmlrenderer.html.ElementBase;
 	import htmlrenderer.html.css.StylesBase;
+	import htmlrenderer.parser.loader.Asset;
+	import htmlrenderer.parser.loader.FontLoader;
 
 	public class CSSLoadTreeNode extends ParseLoadTreeNode
 	{
@@ -40,20 +42,27 @@ package htmlrenderer.parser
 
 			reset();
 
+			var loader : Asset;
+
 			while ( hasNext())
 			{
-				text = next().data;
-				
-				if ( text == null )
-					throw new Error("something wrong");
-				
-				styles += text;
+
+				loader = next();
+
+				// you were sending the font loader through this crap!
+				if ( !( loader is FontLoader ))
+				{
+					text = loader.data;
+
+					if ( text == null )
+						throw new Error( "something wrong" );
+
+					styles += text;
+
+				}
 			}
 
-			
-	
 			var _cssStle : StylesBase = document.css.parseCSS( styles );
-
 
 			super.finished( event );
 		}

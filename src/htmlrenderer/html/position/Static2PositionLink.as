@@ -84,6 +84,8 @@ package htmlrenderer.html.position
 					{
 						style.width = 0;
 						style.height = 0;
+						style.left = 0;
+						style.top = 0;
 						element.visible = false;
 					}
 
@@ -224,11 +226,17 @@ package htmlrenderer.html.position
 			{
 				currentElement = childrenElements[ length ];
 
+				--length;
+				// dont return display none
+				if ( currentElement.computedStyles.display == "none" )
+				{
+					continue;
+				}
+				
 				if (( currentElement.computedStyles.float == targetElement.computedStyles.float ) && currentElement != targetElement )
 				{
 					return currentElement;
 				}
-				--length;
 			}
 
 			return null;
@@ -252,6 +260,12 @@ package htmlrenderer.html.position
 			{
 				currentElement = childrenElements[ length ];
 				
+				// dont return display none
+				if ( currentElement.computedStyles.display == "none" )
+				{
+					--length;
+					continue;
+				}
 				// grabs first float none itemd
 				if ( clearAllOnce == false && currentElement.computedStyles.float == "none" )
 				{

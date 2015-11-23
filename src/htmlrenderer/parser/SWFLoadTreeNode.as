@@ -43,8 +43,21 @@ package htmlrenderer.parser
 				var image : * = loader.loader.content;
 				var url : String = loader.id;
 
-				element.rawStyle.width = node.@width.toString() || image.width;
-				element.rawStyle.height = node.@height.toString() || image.height;
+				
+				var style : Object = element.rawStyle;
+				
+				if ( !style.width )
+				{
+					element.rawStyle.width = node.@width.toString() || 0;
+				}
+				
+				if ( !style.height )
+				{
+					element.rawStyle.height = node.@height.toString() || 0;					
+				}
+				
+				//element.rawStyle.width = node.@width.toString() || image.width;
+				//element.rawStyle.height = node.@height.toString() || image.height;
 
 				loader.destroy();
 				

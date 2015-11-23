@@ -17,10 +17,10 @@
 package htmlrenderer.html
 {
 
-	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
 	import flash.display.GradientType;
+	import flash.display.Graphics;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
@@ -28,13 +28,15 @@ package htmlrenderer.html
 	import flash.geom.Rectangle;
 
 	import htmlrenderer.event.HTMLEvent;
-	import htmlrenderer.parser.loader.Asset;
+	import htmlrenderer.html.css.CSSProperties;
+	import htmlrenderer.parser.loader.AssetGroup;
 	import htmlrenderer.parser.loader.AssetManager;
 	import htmlrenderer.parser.loader.ImageLoader;
 	import htmlrenderer.util.ElementUtil;
 	import htmlrenderer.util.HTMLUtils;
 	import htmlrenderer.util.TypeUtils;
 
+	import totem.display.LargeBitmapDataCanvas;
 	import totem.display.layout.TSprite;
 	import totem.math.MathUtils;
 
@@ -87,7 +89,7 @@ package htmlrenderer.html
 
 		private var _elementRect : Rectangle = new Rectangle();
 
-		private var _loaders : Vector.<Asset> = new Vector.<Asset>();
+		private var backgroundBitmapImage : LargeBitmapDataCanvas;
 
 		private var currentUpdateIndex : int;
 
@@ -108,6 +110,7 @@ package htmlrenderer.html
 			_allStyles = styles || _defaultStyleObject;
 
 			_rawStyle = _allStyles[ _currentState ];
+
 		}
 
 		public function addElement( child : ElementBase ) : ElementBase
@@ -151,14 +154,14 @@ package htmlrenderer.html
 				return parentSize;
 			}
 
-			return TypeUtils.cleanNumber( val, parentSize )
+			return TypeUtils.cleanNumber( val, parentSize );
 		}
 
 		public function get childrenElements() : Vector.<ElementBase>
 		{
 			if ( !_childrenElementList || dirty )
 			{
-				
+
 				_childrenElementList = floatedRight.concat( floatedLeft ).concat( floatedNone );
 				_childrenElementList.sort( sortingFunction );
 				dirty = false;
@@ -190,6 +193,29 @@ package htmlrenderer.html
 
 		override public function destroy() : void
 		{
+
+			if ( backgroundBitmapImage )
+			{
+				backgroundBitmapImage.destroy();
+
+				if ( backgroundBitmapImage.parent )
+					backgroundBitmapImage.parent.removeChild( backgroundBitmapImage );
+
+				backgroundBitmapImage = null;
+			}
+
+			floatedLeft.length = 0;
+			floatedLeft = null;
+			
+			floatedNone.length = 0;
+			floatedNone = null;
+			
+			floatedRight.length = 0;
+			floatedRight = null;
+			
+			images.length = 0;
+			images = null;
+			
 			parentElement = null;
 
 			document = null;
@@ -201,9 +227,11 @@ package htmlrenderer.html
 			_computedStyles = null;
 
 			_rawStyle = null;
-
-			while ( images.length )
-				images.pop();
+			
+			if ( imageMask )
+			{
+				imageMask = null;
+			}
 
 			while ( _childrenElementList.length )
 				_childrenElementList.pop().destroy();
@@ -258,7 +286,6 @@ package htmlrenderer.html
 		public function updateDisplay() : void
 		{
 			cleanStyle();
-
 			draw();
 
 			// sort and position children
@@ -266,7 +293,6 @@ package htmlrenderer.html
 			currentUpdateIndex = 0;
 			totalUpdateIndex = childrenElements.length;
 
-			
 			for each ( var childElement : ElementBase in childrenElements )
 			{
 				if ( childElement is ElementBase )
@@ -279,13 +305,10 @@ package htmlrenderer.html
 			// no children draw me now!!!
 			if ( totalUpdateIndex == 0 )
 			{
-				document.layoutPosition.handleRequest( this );
-				render();
+				var positionUpdated : Boolean = document.layoutPosition.handleRequest( this );
 
-				if ( _loaders.length == 0 )
-				{
-					dispatchEvent( new HTMLEvent( HTMLEvent.DRAW_COMPLETE_EVENT, this ));
-				}
+				render();
+				dispatchEvent( new HTMLEvent( HTMLEvent.DRAW_COMPLETE_EVENT, this ));
 			}
 		}
 
@@ -328,21 +351,35 @@ package htmlrenderer.html
 					_computedStyles[ prop ] = 0;
 				}
 			}
+
 		}
 
-		protected function draw() : void
+		protected function draw() : Boolean
 		{
+
+			if ( backgroundBitmapImage )
+			{
+				backgroundBitmapImage.destroy();
+
+				if ( backgroundBitmapImage.parent )
+					backgroundBitmapImage.parent.removeChild( backgroundBitmapImage );
+			}
+
 			graphics.clear();
 
 			if ( _computedStyles.hasOwnProperty( "display" ))
 			{
 				var display : String = _computedStyles.display;
 
-				if ( display == "none" )
+				var parentDisplay : String = parentElement.computedStyles.display;
+
+				if ( display == "none" || parentDisplay == "none" )
+					//if ( display == "none" )
 				{
 					_computedStyles.width = 0;
 					_computedStyles.height = 0;
-					return;
+
+					return false;
 				}
 				else if ( display == "block" )
 				{
@@ -386,35 +423,23 @@ package htmlrenderer.html
 				scrollRect = new Rectangle( 0, 0, _computedStyles.width, _computedStyles.height );
 			}
 
-			if ( _computedStyles.visibility == "hidden" )
-			{
-				this.visible = false;
-			}
+			this.visible = ( _computedStyles.visibility != "hidden" );
 
 			if ( _computedStyles.opacity )
 			{
 				this.alpha = parseFloat( _computedStyles.opacity );
 			}
+
+			return true;
 		}
 
 		protected function handleBackgroundLoaded( event : Event ) : void
 		{
 			IEventDispatcher( event.target ).removeEventListener( Event.COMPLETE, handleBackgroundLoaded );
 
-			var idx : int = _loaders.indexOf( event.target as Asset );
-			_loaders.splice( idx, 1 );
-
-			if ( _loaders.length == 0 )
-			{
-				graphics.clear();
-				drawBorder();
-				graphics.endFill();
-
-				render();
-				trace( "completed", name );
-
-				dispatchEvent( new HTMLEvent( HTMLEvent.DRAW_COMPLETE_EVENT, this ));
-			}
+			graphics.clear();
+			drawBorder();
+			graphics.endFill();
 		}
 
 		protected function handleElementUpdateComplete( event : Event ) : void
@@ -431,12 +456,7 @@ package htmlrenderer.html
 				document.layoutPosition.handleRequest( this );
 				render();
 
-				if ( _loaders.length == 0 )
-				{
-					trace( "completed", name );
-
-					dispatchEvent( new HTMLEvent( HTMLEvent.DRAW_COMPLETE_EVENT, this ));
-				}
+				dispatchEvent( new HTMLEvent( HTMLEvent.DRAW_COMPLETE_EVENT, this ));
 			}
 		}
 
@@ -455,12 +475,16 @@ package htmlrenderer.html
 					image.mask = imageMask;
 				}
 
-				addChildAt( imageMask, 1 );
+				addChildAt( imageMask, 0 );
 			}
 		}
 
 		private function drawBackground() : void
 		{
+
+			if ( _computedStyles.height == "auto" || _computedStyles.height == 0 )
+				return;
+
 			if ( _computedStyles.background == null )
 				_computedStyles.background = {};
 
@@ -482,6 +506,10 @@ package htmlrenderer.html
 
 		private function drawBorder() : void
 		{
+
+			if ( _computedStyles.height == "auto" || _computedStyles.height == 0 )
+				return;
+
 			// left right top bottom
 			var border : Object = _computedStyles.border;
 
@@ -502,6 +530,7 @@ package htmlrenderer.html
 				// shape
 				drawBackground();
 				drawShape( border.left, border.top, _computedStyles.width - border.left - border.right, _computedStyles.height - border.top - border.bottom );
+
 			}
 		}
 
@@ -525,14 +554,14 @@ package htmlrenderer.html
 			}
 		}
 
-		private function getImageMatrix( background : Object, imageWidth : Number, imageHeight : Number ) : Matrix
+		private function getImageMatrix( background : Object, imageWidth : Number, imageHeight : Number, matrix : Matrix = null ) : Matrix
 		{
-			var matrix : Matrix = new Matrix();
+			matrix ||= new Matrix();
 
 			var tw : Number = _computedStyles.width - imageWidth;
 			var th : Number = _computedStyles.height - imageHeight;
-			matrix.tx = TypeUtils.cleanNumber( background.x || 0, tw );
-			matrix.ty = TypeUtils.cleanNumber( background.y || 0, th );
+			matrix.tx = TypeUtils.cleanNumber( background.position[ 0 ] || 0, tw );
+			matrix.ty = TypeUtils.cleanNumber( background.position[ 1 ] || 0, th );
 
 			var scale : Number = 1;
 
@@ -557,61 +586,136 @@ package htmlrenderer.html
 
 		private function imageBackground() : void
 		{
-			var url : String = HTMLUtils.cleanURL( _computedStyles.background.url );
-
-			url = document.baseFile.resolvePath( url ).url;
-
 			if ( _computedStyles.height == "auto" || _computedStyles.height == 0 )
 				return;
 
+			// some sort of background object that will hold an aarray of textures
+
+			//_computedStyles.background
+
 			var assetLoader : AssetManager = document.assetManager;
-			var bitmapLoader : ImageLoader = assetLoader.getAsset( url ) as ImageLoader;
+
+			var bitmapLoader : ImageLoader;
 			var bitmapData : BitmapData;
+			var matrix : Matrix = new Matrix();
+			var url : String;
+			var i : int;
+			var background : Object = _computedStyles.background;
+			var l : int = background.url.length;
 
-			if ( bitmapLoader && bitmapLoader.isComplete())
+			//  create a group loader
+
+			var loaderName : String = this.name + "_loader";
+
+			var assetGroup : AssetGroup = assetLoader.getAsset( loaderName ) as AssetGroup;
+
+			if ( assetGroup && assetGroup.isComplete())
 			{
 
-				bitmapData = bitmapLoader.bitmapData;
-				var matrix : Matrix = getImageMatrix( _computedStyles.background, bitmapData.width, bitmapData.height );
+				backgroundBitmapImage = new LargeBitmapDataCanvas( _computedStyles.width, _computedStyles.height, ( _computedStyles.background.color == null ), _computedStyles.background.color );
 
-				if ( _computedStyles.background.repeat == false )
+				for ( ; i < l; i++ )
 				{
-					var bitmap : Bitmap = new Bitmap( bitmapData );
-					bitmap.transform.matrix = matrix;
+					url = HTMLUtils.cleanURL( _computedStyles.background.url[ i ]);
 
-					images.push( bitmap );
-					addChildAt( bitmap, 0 );
+					url = document.baseFile.resolvePath( "css//" + url ).url;
+
+					bitmapLoader = assetLoader.getAsset( url ) as ImageLoader;
+
+					if ( bitmapLoader && bitmapLoader.isComplete())
+					{
+
+						bitmapData = bitmapLoader.bitmapData;
+
+						//matrix = getImageMatrix( _computedStyles.background, bitmapData.width, bitmapData.height, matrix );
+
+						var tw : Number = _computedStyles.width - bitmapData.width;
+						var th : Number = _computedStyles.height - bitmapData.height;
+						matrix.tx = TypeUtils.cleanNumber( background.position[ i ][ 0 ] || 0, tw );
+						matrix.ty = TypeUtils.cleanNumber( background.position[ i ][ 1 ] || 0, th );
+
+						var scale : Number = 1;
+
+						if ( background.hasOwnProperty( "width" ) && !isNaN( background.width ))
+						{
+							scale = background.width / bitmapData.width;
+						}
+
+						matrix.scale( scale, scale );
+
+						if ( _computedStyles.background.repeat[ i ] == false )
+						{
+							backgroundBitmapImage.draw( bitmapData, matrix );
+								//rest matrix
+						}
+						else
+						{
+
+							var repeatCanvas : Sprite = new Sprite();
+							var gr : Graphics = repeatCanvas.graphics;
+
+							gr.beginBitmapFill( bitmapData, matrix, true, false );
+							gr.drawRect( 0, 0, _computedStyles.width, _computedStyles.height );
+							gr.endFill();
+
+							backgroundBitmapImage.draw( repeatCanvas );
+
+						}
+
+						matrix.identity();
+
+					}
 				}
-				else
-				{
-					graphics.beginBitmapFill( bitmapData, matrix, _computedStyles.background.repeat );
-				}
+
+				this.addChildAt( backgroundBitmapImage, 0 );
+					//this.graphics.beginBitmapFill( backgroundBitmapImage, null, false, false );
 			}
-			else
+			else if ( !assetGroup )
 			{
 
-				if ( !assetLoader.hasAsset( url ))
+				assetGroup = new AssetGroup( loaderName );
+				assetGroup.addEventListener( Event.COMPLETE, handleBackgroundLoaded );
+
+				assetLoader.addAsset( loaderName, assetGroup );
+
+				for ( ; i < l; i++ )
 				{
-					bitmapLoader = assetLoader.loadAsset( url, ImageLoader ) as ImageLoader;
-					_loaders.push( bitmapLoader );
-					bitmapLoader.addEventListener( Event.COMPLETE, handleBackgroundLoaded );
-					bitmapLoader.start();
+					url = HTMLUtils.cleanURL( _computedStyles.background.url[ i ]);
+
+					url = document.baseFile.resolvePath( "css//" + url ).url;
+
+					if ( !assetLoader.hasAsset( url ))
+					{
+						bitmapLoader = assetLoader.loadAsset( url, ImageLoader ) as ImageLoader;
+						assetGroup.addLoader( bitmapLoader );
+					}
 
 				}
 
-			}
+				assetGroup.start();
 
+			}
 		}
 
 		private function render() : void
 		{
 
-			//trace( " _computedStyles.heigh= " + _computedStyles.height );
-
 			if ( _computedStyles.height == 0 || _computedStyles.height == "auto" )
 			{
 				_computedStyles.height = Math.max( this.height, parentElement.computedStyles.height );
 				_computedStyles.height += ( computedStyles.padding.top + computedStyles.padding.bottom );
+
+				if ( _computedStyles[ CSSProperties.MIN_HEIGHT ])
+				{
+
+					var minHeight : Number = TypeUtils.cleanNumber( _computedStyles[ CSSProperties.MIN_HEIGHT ], parentElement.computedStyles.height );
+					minHeight;
+
+					if ( _computedStyles.height < minHeight )
+					{
+						_computedStyles.height = minHeight;
+					}
+				}
 
 				draw();
 			}

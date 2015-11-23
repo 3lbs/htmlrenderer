@@ -45,8 +45,8 @@ package htmlrenderer.parser
 				var image : * = loader.data;
 				var url : String = loader.id;
 
-				element.rawStyle.width = node.@width.toString() || 0; // image.width;
-				element.rawStyle.height = node.@height.toString() || 0; //image.height;
+				element.rawStyle.width = image.width;
+				element.rawStyle.height = image.height;
 				
 
 				if ( image is Bitmap )

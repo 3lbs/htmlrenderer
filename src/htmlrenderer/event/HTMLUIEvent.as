@@ -14,30 +14,25 @@
 //
 //------------------------------------------------------------------------------
 
-package htmlrenderer.util
+package htmlrenderer.event
 {
 
-	import htmlrenderer.html.ElementImage;
-	import totem.display.ISWFObject;
+	import flash.events.Event;
 
-	public class ElementSWFBase extends ElementImage implements ISWFObject
+	import totem.events.ObjectEvent;
+
+	public class HTMLUIEvent extends ObjectEvent
 	{
-		public function ElementSWFBase()
+		public static const SCROLL_INDEX_EVENT : String = "HTMLUIEvent:scrollIndexEvent";
+
+		public function HTMLUIEvent( type : String, data : Object = null, bubbles : Boolean = false, cancelable : Boolean = false )
 		{
-			super();
+			super( type, data, bubbles, cancelable );
 		}
 
-		override public function set display( value : Boolean ) : void
+		override public function clone() : Event
 		{
-		}
-
-		public function loadURL( value : String ) : void
-		{
-		}
-
-		public function unload() : void
-		{
-
+			return new HTMLUIEvent( type, data, bubbles, cancelable ) as Event;
 		}
 	}
 }

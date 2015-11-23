@@ -41,10 +41,14 @@ package htmlrenderer.util
 			var rgbPattern : RegExp = /(?:rgb)a?\(\d{1,3},\s?\d{1,3},\s?\d{1,3}(?:,\s?[0-9\.]+)?\)/;
 
 			var rgbString : String = colorProp.match( rgbPattern )[ 0 ];
-
+			
+			//var result : Array = colorProp.match(/(-?\d+px)|((?:rgb)a?\(.+\))/g);
+			//var result1 : Array = colorProp.match(/((?:rgb)a?\(.+\))/g);
+			var shadowVector : Array = colorProp.match(/(-?\d+px)/g);
+				
 			//var rgbColor : uint = HTMLUtils.convertCSS_RGBColor( rgbString );
 
-			var a : Array = colorProp.split( "(" )[ 1 ].split( ") " );
+			//var a : Array = colorProp.split( "(" )[ 1 ].split( ")" );
 			/*var c : Array = a[ 0 ].split( "," );
 			var color : uint = HTMLUtils.convertRGB( c[ 0 ], c[ 1 ], c[ 2 ]);*/
 
@@ -58,10 +62,10 @@ package htmlrenderer.util
 				alpha = parseFloat( rgbArray[ 3 ]);
 			}
 
-			var propArray : Array = a[ 1 ].split( " " );
+			//var propArray : Array = a[ 1 ].split( " " );
 
-			var blur : Number = TypeUtils.cleanString( propArray[ 2 ]);
-			var point : Vector2D = new Vector2D( TypeUtils.cleanString( propArray[ 0 ]), TypeUtils.cleanString( propArray[ 1 ]));
+			var blur : Number = TypeUtils.cleanString( shadowVector[ 2 ]);
+			var point : Vector2D = new Vector2D( TypeUtils.cleanString( shadowVector[ 0 ]), TypeUtils.cleanString( shadowVector[ 1 ]));
 			var angle : Number = point.toRotation() * ( 180 / Math.PI );
 
 			var shadow : DropShadowFilter = new DropShadowFilter();
@@ -74,6 +78,9 @@ package htmlrenderer.util
 			shadow.angle = angle;
 			shadow.alpha = alpha;
 
+
+			
+			
 			displayObject.filters = [ shadow ];
 		}
 

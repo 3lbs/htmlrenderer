@@ -17,6 +17,7 @@
 package htmlrenderer.parser.chain
 {
 
+	import flash.system.ApplicationDomain;
 	import flash.utils.getDefinitionByName;
 
 	import htmlrenderer.html.ScriptBase;
@@ -24,10 +25,13 @@ package htmlrenderer.parser.chain
 	import htmlrenderer.parser.ParseTreeNode;
 	import htmlrenderer.parser.loader.Asset;
 	import htmlrenderer.parser.loader.AssetManager;
+	import htmlrenderer.parser.loader.DocumentPropertiesLoader;
+	import htmlrenderer.parser.loader.FileStreamLoader;
 	import htmlrenderer.parser.loader.FontLoader;
-	import htmlrenderer.parser.loader.SingleFileLoader;
 	import htmlrenderer.util.FontUtil;
 	import htmlrenderer.util.HTMLUtils;
+
+	import ladydebug.Logger;
 
 	public class HeadLink extends BaseLink
 	{
@@ -51,6 +55,7 @@ package htmlrenderer.parser.chain
 
 				var assetManager : AssetManager = treeNode.document.assetManager;
 				var url : String;
+				var cssRequiredLoaders : Vector.<Asset> = new Vector.<Asset>();
 
 				for each ( var xml : XML in node.children())
 				{
@@ -60,13 +65,18 @@ package htmlrenderer.parser.chain
 						//var linkLoader : SingleFileLoader = new SingleFileLoader( url );
 						url = treeNode.document.baseFile.resolvePath( url ).url;
 
-						var cssLoader : Asset = assetManager.loadAsset( url, SingleFileLoader );
+						var cssLoader : Asset = assetManager.loadAsset( url, FileStreamLoader );
+						cssRequiredLoaders.push( cssLoader );
 
 						parseToken.addLoader( cssLoader );
 					}
 					else if ( xml.localName() == "title" )
 					{
 						treeNode.document.title = xml.text();
+					}
+					else if ( xml.localName() == "meta" )
+					{
+						treeNode.document.properties[xml.@name.toString()] = xml.@content.toString();
 					}
 					else if ( xml.localName() == "script" )
 					{
@@ -84,16 +94,41 @@ package htmlrenderer.parser.chain
 								}
 							}
 						}
+						// look for json files
+						else if ( src.indexOf( ".json" ) > -1 )
+						{
+
+							url = treeNode.document.baseFile.resolvePath( src ).url;
+							var jsonLoader : DocumentPropertiesLoader = assetManager.loadAsset( url, DocumentPropertiesLoader ) as DocumentPropertiesLoader;
+							jsonLoader.document = treeNode.document;
+
+							parseToken.addLoader( jsonLoader );
+						}
+
+						// look for in game controller classes
 
 						var asClass : String = xml.@asclass.toString();
 
 						if ( asClass )
 						{
+							
+							asClass = treeNode.document.scriptLoc + asClass;
+							
 							var clazz : Class = getDefinitionByName( asClass ) as Class;
+							
+							if ( ApplicationDomain.currentDomain.hasDefinition( asClass ))
+							{
+								clazz = getDefinitionByName( asClass ) as Class;
 
-							var script : ScriptBase = new clazz( treeNode.document );
+								var script : ScriptBase = new clazz( treeNode.document );
 
-							treeNode.document.addScript( script );
+								treeNode.document.addScript( script );
+							}
+							else
+							{
+								Logger.error( this, "handleRequest", " missing as3 class! for html.  didnt include: " + asClass )
+
+							}
 
 						}
 					}
@@ -108,6 +143,8 @@ package htmlrenderer.parser.chain
 						if ( !assetManager.hasAsset( url ))
 						{
 							var fontLoader : FontLoader = assetManager.loadAsset( url, FontLoader ) as FontLoader;
+
+							fontLoader.required( cssRequiredLoaders );
 							fontLoader.fontNames = unloadedFonts;
 							parseToken.addLoader( fontLoader );
 								//fontLoader.start();

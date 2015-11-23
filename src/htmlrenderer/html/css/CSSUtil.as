@@ -62,16 +62,23 @@ package htmlrenderer.html.css
 		public static function cleanBackground( styleObject : Object ) : Object
 		{
 
-			var _background : Object = { type: "none", alpha: 1 };
+			var _background : Object;
+			
 
 			var propList : Array = CSSProperties.getBackgroundProps();
 			var value : String;
+			var l : int;
+
+			var result : Array;
+			var _parsed : Array;
 
 			for each ( var prop : String in propList )
 			{
 				if ( styleObject.hasOwnProperty( prop ))
 				{
-					value = styleObject[ prop ];
+					 _background ||= { type: "none", alpha: 1 };
+			
+					 value = styleObject[ prop ];
 
 					if ( prop == CSSProperties.BACKGROUND_COLOR )
 					{
@@ -80,22 +87,47 @@ package htmlrenderer.html.css
 					}
 					else if ( prop == CSSProperties.BACKGROUND_SIZE )
 					{
-						var pos : Array = value.split( " " )
-						_background.width = parseFloat( pos[ 0 ]);
-						_background.height = parseFloat( pos[ 1 ]);
+						// this should be an array
+						_background.size = value.split( /\s*/g )
+
+							//_background.width = parseFloat( pos[ 0 ]);
+							////_background.height = parseFloat( pos[ 1 ]);
 					}
 					else if ( prop == CSSProperties.BACKGROUND_POSITION )
 					{
-						var position : Array = value.split( " " )
-						_background.x = ( position[ 0 ]);
-						_background.y = ( position[ 1 ]);
+						// this should be an array
+						var position : Array
+						result = new Array();
+						_parsed = value.split( /,\s*/g );
+						l = _parsed.length;
+
+						while ( l-- )
+						{
+							result.push( _parsed[ l ].split( " " ));
+								//_background.x = ( position[ 0 ]);
+								//_background.y = ( position[ 1 ]);
+								//result.push( _parsed[ l ].indexOf( "no-repeat" ) > -1 );
+						}
+						_background.position = result;
+
 					}
 					else if ( prop == CSSProperties.BACKGROUND_REPEAT )
 					{
-						_background.repeat = !( value.indexOf( "no-repeat" ) > -1 );
+						result = new Array();
+						_parsed = value.split( /,\s*/g );
+						l = _parsed.length;
+
+						while ( l-- )
+						{
+							result.push( _parsed[ l ].indexOf( "no-repeat" ) < 0 );
+						}
+
+						_background.repeat = result;
+							//_background.repeat = !( value.indexOf( "no-repeat" ) > -1 );
 					}
 					else if ( prop == CSSProperties.BACKGROUND_SIZE )
 					{
+						// this should be an array
 						_background.scaleX = parseFloat( value );
 						_background.scaleY = parseFloat( value );
 					}
@@ -107,12 +139,25 @@ package htmlrenderer.html.css
 						}
 						else if ( value.indexOf( "url(" ) > -1 )
 						{
-							_background.url = value.match( urlPattern )[ 0 ];
+							// this should be an array
+							//url("img/army_ant.png"),url("img/ants_menuNavButtton.png"),url("img/dirtbgtile.png")
+							result = new Array();
+							_parsed = value.split( /,\s*/g );
+							l = _parsed.length;
+
+							while ( l-- )
+							{
+								//	result.push( _parsed[l].indexOf( "no-repeat" ) > -1 ); 
+								result.push( _parsed[ l ].match( urlPattern )[ 0 ]);
+							}
+
+							_background.url = result;
+								//_background.url = value.match( urlPattern )[ 0 ];
 								//substr( value.indexOf( "url(" ) + 4, value.lastIndexOf( ")" ) - 1 ).split( '"' ).join( "" ).split( ")" ).join( "" );
 						}
 						else
 						{
-							_background.url = value;
+							_background.url = [ value ];
 						}
 					}
 				}
@@ -236,7 +281,7 @@ package htmlrenderer.html.css
 		public static function cleanMargin( styleObject : Object ) : Object
 		{
 
-			var _margin : Object = { left: 0, right: 0, top: 0, bottom: 0 };
+			var _margin : Object;
 
 			var propList : Array = CSSProperties.getMarginProps();
 			var value : String;
@@ -245,6 +290,8 @@ package htmlrenderer.html.css
 			{
 				if ( styleObject.hasOwnProperty( prop ))
 				{
+					_margin ||= { left: 0, right: 0, top: 0, bottom: 0 };
+					
 					value = styleObject[ prop ];
 
 					if ( prop == "margin" )
@@ -293,7 +340,8 @@ package htmlrenderer.html.css
 		public static function cleanPadding( styleObject : Object ) : Object
 		{
 
-			var _padding : Object = { left: 0, right: 0, top: 0, bottom: 0 };
+			var _padding : Object;
+			
 
 			var propList : Array = CSSProperties.getPaddingProps();
 			var value : String;
@@ -302,6 +350,8 @@ package htmlrenderer.html.css
 			{
 				if ( styleObject.hasOwnProperty( prop ))
 				{
+					_padding ||= { left: 0, right: 0, top: 0, bottom: 0 };
+					
 					value = styleObject[ prop ];
 
 					if ( prop == CSSProperties.PADDING )
@@ -314,20 +364,21 @@ package htmlrenderer.html.css
 						}
 						else
 						{
+							var l : int = 0;
 							_padding.top = parseFloat( p[ 0 ]);
 							_padding.right = parseFloat( p[ 1 ]);
-							_padding.bottom = parseFloat( p[ 2 ]);
-							_padding.left = parseFloat( p[ 3 ]);
+							_padding.bottom = parseFloat( p[ 2 ] || p[ l ]);
+							_padding.left = parseFloat( p[ 3 ] || p[ l++ ]);
 						}
 					}
 					else if ( prop == "paddingLeft" )
-						_padding.left = TypeUtils.cleanString( value );
+						_padding.left = styleObject.paddingLeft = TypeUtils.cleanString( value );
 					else if ( prop == "paddingRight" )
-						_padding.right = TypeUtils.cleanString( value );
+						_padding.right = styleObject.paddingRight = TypeUtils.cleanString( value );
 					else if ( prop == "paddingTop" )
-						_padding.top = TypeUtils.cleanString( value );
+						_padding.top = styleObject.paddingTop = TypeUtils.cleanString( value );
 					else if ( prop == "paddingBottom" )
-						_padding.bottom = TypeUtils.cleanString( value );
+						_padding.bottom = styleObject.paddingBottom = TypeUtils.cleanString( value );
 
 				}
 			}

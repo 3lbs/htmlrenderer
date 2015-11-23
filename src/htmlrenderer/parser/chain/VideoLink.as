@@ -17,12 +17,12 @@
 package htmlrenderer.parser.chain
 {
 
-	import htmlrenderer.html.Node;
+	import htmlrenderer.html.ElementVideo;
 	import htmlrenderer.parser.ParseTreeNode;
 
-	public class BodyLink extends BaseLink
+	public class VideoLink extends BaseLink
 	{
-		public function BodyLink( successor : BaseLink = null )
+		public function VideoLink( successor : BaseLink = null )
 		{
 			super( successor );
 		}
@@ -30,29 +30,37 @@ package htmlrenderer.parser.chain
 		override public function handleRequest( request : String, treeNode : ParseTreeNode, node : XML = null ) : ParseTreeNode
 		{
 
-			if ( request == "body" )
+			if ( request == "video" )
 			{
-				var element : Node = createElement( treeNode.document, treeNode.element, node, BLOCK );
-				element.rawStyle.width = element.rawStyle.height = "100%";
-				//element.rawStyle.background.alpha = 0;
 
-				var headNode : ParseTreeNode = treeNode.getNodeByID( HeadLink.HEAD_ID );
+				var element : ElementVideo;
 
-				var token : ParseTreeNode = new ParseTreeNode( treeNode.document, element, node );
-				token.requires( headNode );
+				var token : ParseTreeNode;
 
+				var url : String;
+
+				var tags : XMLList = node..source.( @type == "video/flv" );
 				
-				// handle js calls
-				var onload : String = node.@onload.toString();
-
-				if ( onload )
+				if ( tags.length() > 0 )
 				{
-					treeNode.document.onload = onload;
+					url = tags[ 0 ].@src;
 				}
 
-				return token;
+				url = treeNode.document.baseFile.resolvePath( url ).url;
+				
+				element = createElement( treeNode.document, treeNode.element, node, INLINE, ElementVideo ) as ElementVideo;
 
+				//element.rawStyle.width = node.@width.toString() || 0;
+				//element.rawStyle.height = node.@height.toString() || 0;
+				
+				element.initialize ( url );
+				
+
+				token = new ParseTreeNode( treeNode.document, element );
+
+				return token;
 			}
+
 			return super.handleRequest( request, treeNode, node );
 		}
 	}

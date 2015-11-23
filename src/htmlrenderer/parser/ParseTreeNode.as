@@ -19,11 +19,11 @@ package htmlrenderer.parser
 
 	import flash.display.DisplayObject;
 	import flash.events.Event;
-
+	
 	import htmlrenderer.html.Document;
 	import htmlrenderer.html.ElementText;
 	import htmlrenderer.html.Node;
-
+	
 	import totem.events.RemovableEventDispatcher;
 
 	public class ParseTreeNode extends RemovableEventDispatcher
@@ -188,6 +188,8 @@ package htmlrenderer.parser
 
 				var nodeName : String = _childXml.name();
 
+				
+				//trace( _childXml.nodeKind() + ", " + _childXml.name() );
 				if ( _childXml.nodeKind() == Parser.ELEMENT )
 				{
 					var result : ParseTreeNode = document.parser.tagChain.handleRequest( nodeName, this, _childXml );

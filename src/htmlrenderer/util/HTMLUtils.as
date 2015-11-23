@@ -20,8 +20,11 @@ package htmlrenderer.util
 	import flash.display.BitmapData;
 	import flash.geom.Rectangle;
 	import flash.utils.ByteArray;
-	
+
 	import htmlrenderer.html.css.CSSUtil;
+
+	import starling.extensions.ColorArgb;
+	import starling.utils.Color;
 
 	public class HTMLUtils
 	{
@@ -47,10 +50,10 @@ package htmlrenderer.util
 		}
 
 		/**
-		 * 
+		 *
 		 * @param value
-		 * @return 
-		 * 
+		 * @return
+		 *
 		 */
 		public static function convertCSS_RGBColor( value : String ) : uint
 		{
@@ -68,6 +71,9 @@ package htmlrenderer.util
 				}
 				else if ( n.length == 4 )
 				{
+
+					//var rgb = value.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i);
+
 					return convertRGBA( n[ 0 ], n[ 1 ], n[ 2 ], n[ 3 ]);
 				}
 			}
@@ -91,27 +97,7 @@ package htmlrenderer.util
 
 		public static function convertRGBA( r : uint, g : uint, b : uint, a : Number ) : uint
 		{
-			if ( a < 0.0 )
-				a = 0.0;
-			else if ( a > 1.0 )
-				a = 1.0;
-
-			if ( r < 0.0 )
-				r = 0.0;
-			else if ( r > 1.0 )
-				r = 1.0;
-
-			if ( g < 0.0 )
-				g = 0.0;
-			else if ( g > 1.0 )
-				g = 1.0;
-
-			if ( b < 0.0 )
-				b = 0.0;
-			else if ( b > 1.0 )
-				b = 1.0;
-
-			return int( a * 255 ) << 24 | int( r * 255 ) << 16 | int( g * 255 ) << 8 | int( b * 255 );
+			return int( a * 255 ) << 24 | int( r ) << 16 | int( g ) << 8 | int( b );
 		}
 
 		public static function generateCheckerboard( width : int, height : int, cellWidth : int = 32, cellHeight : int = 32, color1 : uint = 0xffe7e6e6, color2 : uint = 0xffd9d5d5 ) : BitmapData

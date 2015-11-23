@@ -18,7 +18,7 @@ package htmlrenderer.event
 {
 
 	import flash.events.Event;
-
+	
 	import htmlrenderer.html.ElementBase;
 
 	public class HTMLEvent extends Event
@@ -28,6 +28,8 @@ package htmlrenderer.event
 
 		public static const PARSE_COMPLETE_EVENT : String = "HTMLEvent:parseCompleteEvent";
 
+		public static const UPDATE_ELEMENT_EVENT : String = "HTMLEvent:UpdateElementEvent";
+		
 		public var element : ElementBase;
 
 		public function HTMLEvent( type : String, element : ElementBase, bubbles : Boolean = false, cancelable : Boolean = false )

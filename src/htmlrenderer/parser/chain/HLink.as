@@ -16,7 +16,6 @@ package htmlrenderer.parser.chain
 			
 			if ( tags.indexOf( request ) > -1 )
 			{
-				trace("");
 				
 			}
 			return super.handleRequest( request, treeNode, node );

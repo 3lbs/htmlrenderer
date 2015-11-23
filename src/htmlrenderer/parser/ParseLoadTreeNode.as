@@ -20,14 +20,10 @@ package htmlrenderer.parser
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
 	import flash.events.IOErrorEvent;
-	
-	import flashx.textLayout.debug.assert;
-	
+
 	import htmlrenderer.html.Document;
 	import htmlrenderer.html.ElementBase;
 	import htmlrenderer.parser.loader.Asset;
-	
-	import totem.monitors.promise.wait;
 
 	public class ParseLoadTreeNode extends ParseTreeNode
 	{
@@ -124,6 +120,19 @@ package htmlrenderer.parser
 
 				if ( asset.isComplete())
 				{
+					_complete += 1;
+				}
+			}
+
+			/*var l : int = _loaders.length;
+			var asset : Asset;
+
+			for ( var i : int = 0; i < l; ++i )
+			{
+				asset = _loaders[ i ];
+
+				if ( asset.isComplete())
+				{
 					wait( 3, onComplete );
 				}
 				else
@@ -131,13 +140,15 @@ package htmlrenderer.parser
 					asset.start();
 				}
 			}
-		/*reset();
+		reset();
 
 		// this starts all loaders
 		while ( hasNext())
 		{
 			next().start();
 		}*/
+
+			doStart();
 		}
 
 		public function get totalDispatchers() : int
@@ -154,7 +165,7 @@ package htmlrenderer.parser
 		protected function handleOnFailed( event : Event ) : void
 		{
 			var loader : Asset = event.target as Asset;
-			trace( "failed to load:",  loader.getURL() );
+			trace( "failed to load:", loader.getURL());
 			complete();
 		}
 
@@ -173,6 +184,44 @@ package htmlrenderer.parser
 			{
 				finished();
 			}
+			else
+			{
+				doStart();
+			}
+		}
+
+		private function doStart() : Boolean
+		{
+			var l : int = _loaders.length;
+			var asset : Asset;
+
+			var building : Boolean = false;
+			var i : int;
+
+			for ( i = 0; i < l; ++i )
+			{
+				asset = _loaders[ i ];
+
+				if ( asset.isComplete())
+				{
+					//wait( 3, onComplete );
+					continue;
+				}
+				else
+				{
+					building = true;
+
+					if ( asset.status == EMPTY )
+					{
+						if ( asset.canStart())
+						{
+							asset.start();
+						}
+					}
+				}
+			}
+
+			return building;
 		}
 	}
 }

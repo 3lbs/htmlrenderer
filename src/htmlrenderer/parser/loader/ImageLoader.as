@@ -121,7 +121,7 @@ package htmlrenderer.parser.loader
 
 		protected function simpleLoaderInit( event : Event ) : void
 		{
-			dispatchEvent( event );
+			dispatchEvent( event.clone() );
 		}
 	}
 }

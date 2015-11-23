@@ -61,8 +61,18 @@ package htmlrenderer.parser.chain
 					var imageLoader : SWFFileLoader = assetManager.loadAsset( url, SWFFileLoader ) as SWFFileLoader;
 
 					var image : * = imageLoader.data;
-					element.rawStyle.width = node.@width.toString() || 0;
-					element.rawStyle.height = node.@height.toString() || 0;
+					
+					var style : Object = element.rawStyle;
+					
+					if ( !style.width )
+					{
+						element.rawStyle.width = node.@width.toString() || 0;
+					}
+					
+					if ( !style.height )
+					{
+						element.rawStyle.height = node.@height.toString() || 0;					
+					}
 
 					if ( image )
 					{

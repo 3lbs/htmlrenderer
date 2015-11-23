@@ -49,6 +49,10 @@ package htmlrenderer.html
 				{
 					name = _innerXML.@id.toString();
 				}
+				else if ( _innerXML.localName().toString() == "body" )
+				{
+					name = _innerXML.localName().toString();
+				}
 				else
 				{
 					name = _innerXML.name() + name.split( "instance" ).join( "" );

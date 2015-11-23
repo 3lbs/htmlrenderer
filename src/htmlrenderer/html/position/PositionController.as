@@ -42,7 +42,6 @@ package htmlrenderer.html.position
 			var parentHeight : Number;
 			var parentPadding : Object
 
-			trace( "parent element name", parentElement.name );
 
 			if ( parentElement is ElementBase )
 			{
@@ -71,7 +70,6 @@ package htmlrenderer.html.position
 			var clearRight : Boolean;
 			var clearLeft : Boolean;
 
-			trace( " start loop" );
 
 			for ( var count : int; count < childrenElements.length; ++count )
 			{
@@ -84,9 +82,6 @@ package htmlrenderer.html.position
 				var width : Number = style.width;
 				var height : Number = style.height;
 
-				trace( "" );
-				trace( "-----------------------------------------" );
-				trace( "element name", element.name );
 
 				// display:none;
 				if ( style.display == "none" )

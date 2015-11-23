@@ -33,8 +33,8 @@ package htmlrenderer.parser
 	import htmlrenderer.parser.chain.ObjectLink;
 	import htmlrenderer.parser.chain.PLink;
 	import htmlrenderer.parser.chain.SpanLink;
+	import htmlrenderer.parser.chain.VideoLink;
 	
-	import totem.display.layout.TSprite;
 	import totem.events.RemovableEventDispatcher;
 
 	/**
@@ -63,13 +63,13 @@ package htmlrenderer.parser
 
 		private const block : Array = // Block Elements - HTML 4.01 + new 5 tags
 			[ "address", "applet", "blockquote", "button", "center", "dd", "del", "dir", "div", "dl", "dt", "fieldset", "form", "frameset", "hr", "iframe", "ins", "isindex", "li", "map", "menu", "noframes",
-			"noscript", "object", "ol", "p", "pre", "script", "table", "tbody", "td", "tfoot", "th", "thead", "tr", "ul", "section" ];
+			"noscript", "object", "ol", "p", "pre", "script", "table", "tbody", "td", "tfoot", "th", "thead", "tr", "ul", "section", "video" ];
 
 		// Elements that you can, intentionally, leave open (and which close themselves)
 		private const closeSelf : Array = [ "colgroup", "dd", "dt", "li", "options", "p", "td", "tfoot", "th", "thead", "tr" ];
 
 		private const empty : Array = // Empty Elements - HTML 4.01 + new 5 tags
-			[ "area", "base", "basefont", "br", "col", "frame", "hr", "img", "input", "isindex", "link", "meta", "param", "embed", "video" ];
+			[ "area", "base", "basefont", "br", "col", "frame", "hr", "img", "input", "isindex", "link", "meta", "param", "embed" ];
 
 		private const endTag : RegExp = /^<\/(\w+)[^>]*>/;
 
@@ -100,7 +100,8 @@ package htmlrenderer.parser
 			var brLink : BrLink = new BrLink( pLink );
 			var imgLink : ImgLink = new ImgLink( brLink );
 			var objectLink : ObjectLink = new ObjectLink( imgLink );
-			var divLink : DivLink = new DivLink( objectLink );
+			var videoLink : VideoLink = new VideoLink( objectLink ); 
+			var divLink : DivLink = new DivLink( videoLink );
 			var headLink : HeadLink = new HeadLink( divLink );
 			var bodyLink : BodyLink = new BodyLink( headLink );
 			var htmlLink : HtmlLink = new HtmlLink( bodyLink );
@@ -151,7 +152,7 @@ package htmlrenderer.parser
 
 				html = html.replace( /<!DOCTYPE([^>]*)\s*>/gi, '' )
 
-				html = html.replace( /<meta([^>]*)\s*>/gi, '' )
+				//html = html.replace( /<meta([^>]*)\s*>/gi, '' )
 
 				//html = html.split( "<SCRIPT" ).join("<script");
 				//html = html.split( "</SCRIPT>" ).join("</script>");

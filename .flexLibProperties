@@ -52,8 +52,13 @@
     <classEntry path="htmlrenderer.util.HTMLUtils"/>
     <classEntry path="htmlrenderer.util.TypeUtils"/>
     <classEntry path="htmlrenderer.html.ScriptBase"/>
-    <classEntry path="htmlrenderer.util.ElementSWFBase"/>
     <classEntry path="htmlrenderer.html.ElementInteractive"/>
+    <classEntry path="htmlrenderer.parser.loader.FileStreamLoader"/>
+    <classEntry path="htmlrenderer.parser.loader.DocumentPropertiesLoader"/>
+    <classEntry path="htmlrenderer.parser.loader.AssetGroup"/>
+    <classEntry path="htmlrenderer.parser.chain.VideoLink"/>
+    <classEntry path="htmlrenderer.html.VideoPlayer"/>
+    <classEntry path="htmlrenderer.event.HTMLUIEvent"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

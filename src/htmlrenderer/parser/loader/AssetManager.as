@@ -36,10 +36,18 @@ package htmlrenderer.parser.loader
 
 		private var totalQue : int = 3;
 
-		private var types : Array = [ ".png", ".gif", ".swf", ".jpg", ".css" ];
+		private var types : Array = [ ".png", ".gif", ".swf", ".jpg", ".css", ".json" ];
 
 		public function AssetManager()
 		{
+		}
+
+		public function addAsset( id : String, asset : Asset ) : void
+		{
+			if ( !hasAsset( id ) )
+			{
+				resourceMap[ id ] = asset;			
+			}
 		}
 
 		override public function destroy() : void
@@ -67,6 +75,7 @@ package htmlrenderer.parser.loader
 		public function hasAsset( id : String ) : Boolean
 		{
 			return resourceMap[ id ] != null;
+	
 		}
 
 		public function loadAsset( url : String, assetClassType : Class ) : Asset
@@ -99,7 +108,7 @@ package htmlrenderer.parser.loader
 				}
 				else
 				{
-					throw new Error( "File doesnt exsist" );
+					throw new Error( "File doesnt exsist: " + url );
 				}
 
 			}

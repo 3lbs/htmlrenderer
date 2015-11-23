@@ -19,7 +19,7 @@ package htmlrenderer.parser.loader
 
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
-	
+
 	import totem.events.RemovableEventDispatcher;
 
 	public class Asset extends RemovableEventDispatcher
@@ -39,14 +39,44 @@ package htmlrenderer.parser.loader
 
 		private var _id : String;
 
+		private var _requires : Vector.<Asset> = new Vector.<Asset>();
+
 		public function Asset( url : String )
 		{
 			this.url = url;
+			super();
+		}
+
+		public function canStart() : Boolean
+		{
+			// you dont want to start a loading or complete proxy again
+			if ( status != EMPTY )
+			{
+				return false;
+			}
+
+			// test all the dependent proxy are ready
+			for each ( var proxy : Asset in _requires )
+			{
+				if ( proxy.isComplete() == false )
+				{
+					return false;
+				}
+			}
+
+			return true;
 		}
 
 		public function get data() : *
 		{
 			return null;
+		}
+
+		override public function destroy() : void
+		{
+			_requires.length = 0;
+			_requires = null;
+			super.destroy();
 		}
 
 		public function getURL() : String
@@ -74,6 +104,13 @@ package htmlrenderer.parser.loader
 			return _status == FAILED;
 		}
 
+		public function required( list : Vector.<Asset> ) : void
+		{
+			_requires ||= new Vector.<Asset>();
+
+			_requires.concat( list );
+		}
+
 		public function start() : void
 		{
 			if ( _status == COMPLETE )
@@ -82,11 +119,16 @@ package htmlrenderer.parser.loader
 			}
 		}
 
+		public function get status() : int
+		{
+			return _status;
+		}
+
 		protected function failed() : void
 		{
 			_status = FAILED;
-	
-			throw new Error ( "failed to load" );
+
+			throw new Error( "failed to load" );
 			dispatchEvent( new IOErrorEvent( IOErrorEvent.IO_ERROR ));
 		}
 

@@ -14,6 +14,11 @@
 //
 //------------------------------------------------------------------------------
 
+
+// rules : 
+
+//  capital letters in css id properties
+
 package htmlrenderer
 {
 
@@ -32,7 +37,9 @@ package htmlrenderer
 
 		public var baseURL : File;
 
-		private var _baseFont : int = 18;
+		public var scriptURL : String = "";
+		
+		private var _baseFont : int = 16;
 
 		private var _fontURLFiles : Array = [];
 
@@ -78,7 +85,7 @@ package htmlrenderer
 		{
 			var document : Document = new Document( width, height, assetManager );
 			document.baseFile = baseURL;
-
+			document.scriptLoc = scriptURL;
 			document.baseFont = _baseFont;
 
 			if ( _fontURLFiles.length > 0 )
