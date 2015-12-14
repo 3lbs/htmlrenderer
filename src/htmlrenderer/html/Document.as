@@ -271,6 +271,7 @@ package htmlrenderer.html
 		public function parseHTML( document : Document, target : Node, node : XML ) : void
 		{
 			_html = node;
+			
 			parser.addEventListener( HTMLEvent.PARSE_COMPLETE_EVENT, handleParseComplete );
 			parser.parseHTML( document, target, _html );
 		}

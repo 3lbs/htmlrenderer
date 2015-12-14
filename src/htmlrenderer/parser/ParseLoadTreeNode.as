@@ -148,7 +148,14 @@ package htmlrenderer.parser
 			next().start();
 		}*/
 
-			doStart();
+			if ( _loaders.length > 0 && _complete >= totalCount )
+			{
+				finished();
+			}
+			else
+			{
+				doStart();
+			}
 		}
 
 		public function get totalDispatchers() : int

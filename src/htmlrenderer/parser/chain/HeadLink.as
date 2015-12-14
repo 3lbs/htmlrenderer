@@ -55,7 +55,7 @@ package htmlrenderer.parser.chain
 
 				var assetManager : AssetManager = treeNode.document.assetManager;
 				var url : String;
-				var cssRequiredLoaders : Vector.<Asset> = new Vector.<Asset>();
+				//var cssRequiredLoaders : Vector.<Asset> = new Vector.<Asset>();
 
 				for each ( var xml : XML in node.children())
 				{
@@ -66,8 +66,9 @@ package htmlrenderer.parser.chain
 						url = treeNode.document.baseFile.resolvePath( url ).url;
 
 						var cssLoader : Asset = assetManager.loadAsset( url, FileStreamLoader );
-						cssRequiredLoaders.push( cssLoader );
+						//cssRequiredLoaders.push( cssLoader );
 
+						trace( "cssloader: ", cssLoader.status );
 						parseToken.addLoader( cssLoader );
 					}
 					else if ( xml.localName() == "title" )
@@ -144,7 +145,7 @@ package htmlrenderer.parser.chain
 						{
 							var fontLoader : FontLoader = assetManager.loadAsset( url, FontLoader ) as FontLoader;
 
-							fontLoader.required( cssRequiredLoaders );
+							//fontLoader.required( cssRequiredLoaders );
 							fontLoader.fontNames = unloadedFonts;
 							parseToken.addLoader( fontLoader );
 								//fontLoader.start();
